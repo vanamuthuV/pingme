@@ -1,0 +1,82 @@
+# ==============================
+# Build & Target Folders
+# ==============================
+/target/
+build/
+!**/src/main/**/target/
+!**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# ==============================
+# Maven Wrapper
+# ==============================
+.mvn/wrapper/maven-wrapper.jar
+
+# ==============================
+# STS / Eclipse
+# ==============================
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# ==============================
+# IntelliJ IDEA
+# ==============================
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# ==============================
+# NetBeans
+# ==============================
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# ==============================
+# VS Code
+# ==============================
+.vscode/
+
+# ==============================
+# Logs
+# ==============================
+*.log
+logs/
+*.stacktrace
+
+# ==============================
+# OS Generated Files
+# ==============================
+.DS_Store
+Thumbs.db
+*.swp
+
+# ==============================
+# Sensitive Spring Configs
+# ==============================
+# Ignore any file that has credentials/secrets
+**/application-*.properties
+**/application-*.yml
+**/application-*.yaml
+!**/application-example.properties
+!**/application-example.yml
+**/application*.yml
+
+# ==============================
+# Optional: temp / cache
+# ==============================
+tmp/
+*.tmp
+*.bak
+*.backup
+*.swp

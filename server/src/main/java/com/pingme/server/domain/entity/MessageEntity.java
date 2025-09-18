@@ -10,7 +10,17 @@ import org.hibernate.annotations.GenericGenerator;
 import java.time.Instant;
 
 @Entity
-@Table(name = "messages")
+@Table(
+        name = "messages",
+        indexes = {
+
+                // For fast lookup to reciever
+                @Index(name = "idx_receiver_seen", columnList = "reciever_id, is_seen"),
+
+                // For fast lookup to sender
+                @Index(name = "idx_sender_seen", columnList = "sender_id, is_seen")
+        }
+)
 @Data
 @Builder
 @AllArgsConstructor
@@ -21,7 +31,7 @@ public class MessageEntity {
     @GeneratedValue(generator = "cuid")
     @GenericGenerator(
             name = "cuid",
-            strategy = "com.pingme.server.utils.CuidGeneratorUtil"
+            strategy = "com.pingme.server.utils.Impl.CuidGeneratorUtilImpl"
     )
     private String id;
 

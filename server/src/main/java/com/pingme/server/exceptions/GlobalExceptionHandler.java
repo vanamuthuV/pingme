@@ -1,7 +1,7 @@
 package com.pingme.server.exceptions;
 
 import com.pingme.server.types.ResponderType;
-import com.pingme.server.utils.Responder;
+import com.pingme.server.utils.Impl.ResponderImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     @Autowired
-    private Responder responder;
+    private ResponderImpl responder;
 
     @ExceptionHandler({UserNotFoundException.class})
     public ResponseEntity<ResponderType> globalHandler(UserNotFoundException ex) {

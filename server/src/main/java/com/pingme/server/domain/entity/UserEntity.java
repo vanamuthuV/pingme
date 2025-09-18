@@ -24,7 +24,7 @@ public class UserEntity {
     @GeneratedValue(generator = "cuid")
     @GenericGenerator(
             name="cuid",
-            strategy = "com.pingme.server.utils.CuidGeneratorUtil"
+            strategy = "com.pingme.server.utils.Impl.CuidGeneratorUtilImpl"
     )
     @Column(unique = true, nullable = false, updatable = false, columnDefinition = "CHAR(36)")
     private String id;

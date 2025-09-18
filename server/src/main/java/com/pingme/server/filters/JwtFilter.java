@@ -2,7 +2,7 @@ package com.pingme.server.filters;
 
 import com.pingme.server.domain.dto.UserResponseDTO;
 import com.pingme.server.exceptions.JwtUnauthorizedException;
-import com.pingme.server.utils.JwtUtils;
+import com.pingme.server.utils.Impl.JwtUtilsImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ import java.util.List;
 public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtUtilsImpl jwtUtils;
 
     @Override
     protected void doFilterInternal(

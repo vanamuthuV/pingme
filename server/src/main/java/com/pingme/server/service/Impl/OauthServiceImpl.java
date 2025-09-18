@@ -8,8 +8,8 @@ import com.pingme.server.repository.AuthRepository;
 import com.pingme.server.service.OauthService;
 import com.pingme.server.types.ResponderType;
 import com.pingme.server.types.Status;
-import com.pingme.server.utils.JwtUtils;
-import com.pingme.server.utils.Responder;
+import com.pingme.server.utils.Impl.JwtUtilsImpl;
+import com.pingme.server.utils.Impl.ResponderImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -36,13 +36,13 @@ public class OauthServiceImpl implements OauthService {
     private AuthRepository authRepository;
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtUtilsImpl jwtUtils;
 
     @Autowired
     private UserMapperImpl userMapper;
 
     @Autowired
-    private Responder responder;
+    private ResponderImpl responder;
 
     @Override
     public ResponderType authenticate(String code) {

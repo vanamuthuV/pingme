@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.CompletableFuture;
+
 @Service
 public class MessageServiceImpl implements MessageService {
 
@@ -17,7 +19,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Async
     @Override
-    public void saveMessage(MessageIntermediateDTO payload) {
+    public CompletableFuture<String> saveMessage(MessageIntermediateDTO payload) {
 
         MessageEntity message = MessageEntity
                 .builder()
@@ -28,6 +30,8 @@ public class MessageServiceImpl implements MessageService {
                 .build();
 
         MessageEntity savedMessage = messageRepository.save(message);
+
+        return CompletableFuture.completedFuture(savedMessage.getId());
 
     }
 }

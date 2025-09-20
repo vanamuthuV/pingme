@@ -1,12 +1,15 @@
 package com.pingme.server.service;
 
 import com.pingme.server.domain.dto.MessageIntermediateDTO;
+import com.pingme.server.domain.dto.MessageResponseDTO;
 import com.pingme.server.domain.entity.MessageEntity;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface MessageService {
 
     public CompletableFuture<String> saveMessage(MessageIntermediateDTO payload);
-
-}
+    public CompletableFuture<MessageResponseDTO[]> getUnseenMessageByRecieverId(String id);
+    public CompletableFuture<MessageResponseDTO[]> getAllMessages(List<String> messageIds);
+ }

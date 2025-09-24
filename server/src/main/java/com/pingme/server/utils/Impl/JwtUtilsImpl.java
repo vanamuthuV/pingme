@@ -68,7 +68,7 @@ public class JwtUtilsImpl implements JwtUtils {
             return userToObject.mapTo(claims);
 
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.toString() + this.getClass());
             throw new JwtUnauthorizedException("you are unauthorized to access this");
         }
 

@@ -60,6 +60,7 @@ public class OauthServiceImpl implements OauthService {
             if(!isuser.isEmpty()) {
                 System.out.println("Already there");
                 String token = jwtUtils.generateToken(userMapper.mapFrom(isuser.get()));
+
                 isuser.get().setAccess_token(token);
                 UserEntity savedUser = authRepository.save(isuser.get());
                 return responder.createResponse(true, token, "login success", userMapper.mapFrom(savedUser));

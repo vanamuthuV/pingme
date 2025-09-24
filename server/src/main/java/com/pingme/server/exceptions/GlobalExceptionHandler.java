@@ -14,9 +14,35 @@ public class GlobalExceptionHandler {
     @Autowired
     private ResponderImpl responder;
 
-    @ExceptionHandler({UserNotFoundException.class})
-    public ResponseEntity<ResponderType> globalHandler(UserNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responder.createResponse(false, null, ex.getMessage(), null));
+    // User not found → 404
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ResponderType> handleUserNotFound(UserNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(responder.createResponse(false, ex.getMessage(), null));
     }
 
+    // JWT unauthorized → 401
+    @ExceptionHandler(JwtUnauthorizedException.class)
+    public ResponseEntity<ResponderType> handleJwtUnauthorized(JwtUnauthorizedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(responder.createResponse(false, ex.getMessage(), null));
+    }
+
+    // Input data is null → 400
+    @ExceptionHandler(InputDataNullException.class)
+    public ResponseEntity<ResponderType> handleInputDataNull(InputDataNullException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(responder.createResponse(false, ex.getMessage(), null));
+    }
+
+    // No data received → 400
+    @ExceptionHandler(NoDataRecievedException.class)
+    public ResponseEntity<ResponderType> handleNoDataReceived(NoDataRecievedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(responder.createResponse(false, ex.getMessage(), null));
+    }
 }

@@ -8,8 +8,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class ResponderImpl implements Responder {
 
-    public ResponderType createResponse(boolean status, String token, String message, Data data) {
+    public ResponderType createResponse(boolean status, String message, Data data) {
 
+        return ResponderType.
+                builder().
+                status(status).
+                message(message).
+                data(data).
+                build();
+
+    }
+
+    @Override
+    public ResponderType createResponse(boolean status, String token, String message, Data data) {
         return ResponderType.
                 builder().
                 status(status).
@@ -17,7 +28,7 @@ public class ResponderImpl implements Responder {
                 message(message).
                 data(data).
                 build();
-
     }
+
 
 }

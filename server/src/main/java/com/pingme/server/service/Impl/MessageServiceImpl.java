@@ -2,9 +2,11 @@ package com.pingme.server.service.Impl;
 
 import com.pingme.server.domain.dto.MessageIntermediateDTO;
 import com.pingme.server.domain.dto.MessageResponseDTO;
+import com.pingme.server.domain.dto.UserResponseDTO;
 import com.pingme.server.domain.entity.MessageEntity;
 import com.pingme.server.domain.entity.UserEntity;
 import com.pingme.server.mappers.Impl.MessageMapperImpl;
+import com.pingme.server.mappers.Impl.UserMapperImpl;
 import com.pingme.server.repository.MessageRepository;
 import com.pingme.server.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class MessageServiceImpl implements MessageService {
 
     @Autowired
     private MessageMapperImpl messageMapper;
+
+    @Autowired
+    private UserMapperImpl userMapper;
 
     @Async
     @Override
@@ -67,6 +72,20 @@ public class MessageServiceImpl implements MessageService {
             messagesDTOs.add(messageMapper.mapFrom(message));
 
         return CompletableFuture.completedFuture(messagesDTOs.toArray(new MessageResponseDTO[0]));
+
+    }
+
+    @Async
+    @Override
+    public CompletableFuture<List<UserResponseDTO>> getDistinctSendersByReceiverId(String id) {
+
+        List<UserEntity> senders = messageRepository.findDistinctSendersByReceiverID(id);
+        List<UserResponseDTO> sendersDTO = new ArrayList<>();
+
+        for(UserEntity user : senders)
+            sendersDTO.add(userMapper.mapFrom(user));
+
+        return CompletableFuture.completedFuture(sendersDTO);
 
     }
 

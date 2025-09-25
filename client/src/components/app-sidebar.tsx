@@ -1,249 +1,3 @@
-// "use client";
-// import {
-//   Sidebar,
-//   SidebarHeader,
-//   SidebarContent,
-//   SidebarGroup,
-//   SidebarGroupLabel,
-//   SidebarGroupContent,
-//   SidebarMenu,
-//   SidebarMenuItem,
-//   SidebarMenuButton,
-//   SidebarFooter,
-//   SidebarRail,
-// } from "./ui/sidebar";
-// import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuLabel,
-//   DropdownMenuSeparator,
-//   DropdownMenuSub,
-//   DropdownMenuSubContent,
-//   DropdownMenuSubTrigger,
-//   DropdownMenuTrigger,
-// } from "./ui/dropdown-menu";
-// import { Button } from "./ui/button";
-// import { ThemeToggle } from "./theme-toggle";
-// import {
-//   MessagesSquare,
-//   ChevronUp,
-//   Settings,
-//   User,
-//   Palette,
-// } from "lucide-react";
-
-// export type Chat = {
-//   id: string | number;
-//   name: string;
-//   avatarUrl: string;
-//   lastMessage?: string;
-//   isOnline?: boolean;
-// };
-
-// export type CurrentUser = {
-//   name: string;
-//   avatarUrl: string;
-//   status?: string;
-// };
-
-// const DEFAULT_CHATS: Chat[] = [
-//   {
-//     id: "1",
-//     name: "Sarah Connor",
-//     avatarUrl: "https://i.pravatar.cc/64?img=47",
-//     lastMessage: "See you at 2pm!",
-//     isOnline: true,
-//   },
-//   {
-//     id: "2",
-//     name: "Tony Stark",
-//     avatarUrl: "https://i.pravatar.cc/64?img=12",
-//     lastMessage: "Draft looks great.",
-//     isOnline: false,
-//   },
-//   {
-//     id: "3",
-//     name: "Bruce Wayne",
-//     avatarUrl: "https://i.pravatar.cc/64?img=5",
-//     lastMessage: "Let's finalize tonight.",
-//     isOnline: true,
-//   },
-// ];
-
-// const DEFAULT_USER: CurrentUser = {
-//   name: "You",
-//   avatarUrl: "https://i.pravatar.cc/64?img=1",
-//   status: "Available",
-// };
-
-// type AppSidebarProps = {
-//   chats?: Chat[];
-//   currentUser?: CurrentUser;
-//   className?: string;
-//   onSettingsClick?: () => void;
-//   onProfileClick?: () => void;
-// };
-
-// export function AppSidebar({
-//   chats = DEFAULT_CHATS,
-//   currentUser = DEFAULT_USER,
-//   className,
-//   onSettingsClick,
-//   onProfileClick,
-// }: AppSidebarProps) {
-//   return (
-//     <Sidebar className={className}>
-//       <SidebarHeader className="border-b">
-//         <div className="flex items-center gap-2 px-2 py-2">
-//           <MessagesSquare
-//             className="size-4 text-muted-foreground"
-//             aria-hidden
-//           />
-//           <span className="font-medium text-sm text-foreground">Chats</span>
-//         </div>
-//       </SidebarHeader>
-
-//       <SidebarContent>
-//         <SidebarGroup>
-//           <SidebarGroupLabel className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-//             Recent
-//           </SidebarGroupLabel>
-//           <SidebarGroupContent>
-//             <SidebarMenu className="gap-2">
-//               {chats.map((chat) => (
-//                 <SidebarMenuItem key={chat.id}>
-//                   <SidebarMenuButton
-//                     size="lg"
-//                     className="gap-3 rounded-lg data-[state=open]:bg-accent/50 hover:bg-accent"
-//                     tooltip={chat.name}
-//                   >
-//                     <div className="relative">
-//                       <Avatar className="size-10">
-//                         <AvatarImage
-//                           src={
-//                             chat.avatarUrl ||
-//                             "/placeholder.svg?height=40&width=40&query=chat-avatar"
-//                           }
-//                           alt={`${chat.name} avatar`}
-//                         />
-//                         <AvatarFallback className="text-xs">
-//                           {chat.name.slice(0, 2).toUpperCase()}
-//                         </AvatarFallback>
-//                       </Avatar>
-//                       {chat.isOnline ? (
-//                         <span
-//                           aria-hidden
-//                           className="absolute bottom-0 right-0 size-2 rounded-full border-2 border-background bg-emerald-500"
-//                         />
-//                       ) : null}
-//                     </div>
-//                     <div className="min-w-0 flex-1">
-//                       <div className="truncate font-semibold text-sm text-foreground">
-//                         {chat.name}
-//                       </div>
-//                       {chat.lastMessage ? (
-//                         <div className="truncate text-xs text-muted-foreground">
-//                           {chat.lastMessage}
-//                         </div>
-//                       ) : null}
-//                     </div>
-//                   </SidebarMenuButton>
-//                 </SidebarMenuItem>
-//               ))}
-//             </SidebarMenu>
-//           </SidebarGroupContent>
-//         </SidebarGroup>
-//       </SidebarContent>
-
-//       <SidebarFooter className="border-t">
-//         <DropdownMenu>
-//           <DropdownMenuTrigger asChild>
-//             <Button
-//               variant="ghost"
-//               className="w-full justify-between h-auto p-2 hover:bg-accent"
-//             >
-//               <div className="flex items-center gap-3">
-//                 <Avatar className="size-10">
-//                   <AvatarImage
-//                     src={
-//                       currentUser.avatarUrl ||
-//                       "/placeholder.svg?height=40&width=40&query=current-user-avatar"
-//                     }
-//                     alt="Your profile"
-//                   />
-//                   <AvatarFallback className="text-xs">
-//                     {currentUser.name.slice(0, 2).toUpperCase()}
-//                   </AvatarFallback>
-//                 </Avatar>
-//                 <div className="min-w-0 flex-1 text-left">
-//                   <div className="truncate text-sm font-semibold text-foreground">
-//                     {currentUser.name}
-//                   </div>
-//                   <div className="truncate text-xs text-muted-foreground">
-//                     Online
-//                   </div>
-//                 </div>
-//               </div>
-//               <ChevronUp className="h-4 w-4 text-muted-foreground" />
-//             </Button>
-//           </DropdownMenuTrigger>
-//           <DropdownMenuContent
-//             align="end"
-//             alignOffset={-8}
-//             className="w-56"
-//             side="top"
-//           >
-//             <DropdownMenuLabel className="font-normal">
-//               <div className="flex flex-col space-y-1">
-//                 <p className="text-sm font-medium leading-none">
-//                   {currentUser.name}
-//                 </p>
-//                 <p className="text-xs leading-none text-muted-foreground">
-//                   Online
-//                 </p>
-//               </div>
-//             </DropdownMenuLabel>
-//             <DropdownMenuSeparator />
-//             <DropdownMenuItem
-//               onClick={onProfileClick}
-//               className="cursor-pointer gap-2"
-//             >
-//               <User className="h-4 w-4" />
-//               <span>Profile</span>
-//             </DropdownMenuItem>
-//             <DropdownMenuItem
-//               onClick={onSettingsClick}
-//               className="cursor-pointer gap-2"
-//             >
-//               <Settings className="h-4 w-4" />
-//               <span>Settings</span>
-//             </DropdownMenuItem>
-//             <DropdownMenuSub>
-//               <DropdownMenuSubTrigger className="cursor-pointer gap-2">
-//                 <Palette className="h-4 w-4" />
-//                 <span>Theme</span>
-//               </DropdownMenuSubTrigger>
-//               <DropdownMenuSubContent>
-//                 <div className="p-1">
-//                   <ThemeToggle />
-//                 </div>
-//               </DropdownMenuSubContent>
-//             </DropdownMenuSub>
-//           </DropdownMenuContent>
-//         </DropdownMenu>
-//       </SidebarFooter>
-
-//       {/* Rail keeps a slim clickable area and tooltips when collapsed */}
-//       <SidebarRail />
-//     </Sidebar>
-//   );
-// }
-
-// export default AppSidebar;
-
-"use client";
 import {
   Sidebar,
   SidebarHeader,
@@ -276,68 +30,41 @@ import {
   Sun,
   Moon,
   Monitor,
+  Loader,
 } from "lucide-react";
-
-export type Chat = {
-  id: string | number;
-  name: string;
-  avatarUrl: string;
-  lastMessage?: string;
-  isOnline?: boolean;
-};
-
-export type CurrentUser = {
-  name: string;
-  avatarUrl: string;
-  status?: string;
-};
-
-const DEFAULT_CHATS: Chat[] = [
-  {
-    id: "1",
-    name: "Sarah Connor",
-    avatarUrl: "https://i.pravatar.cc/64?img=47",
-    lastMessage: "See you at 2pm!",
-    isOnline: true,
-  },
-  {
-    id: "2",
-    name: "Tony Stark",
-    avatarUrl: "https://i.pravatar.cc/64?img=12",
-    lastMessage: "Draft looks great.",
-    isOnline: false,
-  },
-  {
-    id: "3",
-    name: "Bruce Wayne",
-    avatarUrl: "https://i.pravatar.cc/64?img=5",
-    lastMessage: "Let's finalize tonight.",
-    isOnline: true,
-  },
-];
-
-const DEFAULT_USER: CurrentUser = {
-  name: "You",
-  avatarUrl: "https://i.pravatar.cc/64?img=1",
-  status: "Available",
-};
+import { useEffect, useState } from "react";
+import axios from "../api/axios";
+import type { User as UserType } from "../types/user";
+import { useAuth } from "../hooks/use-auth";
 
 type AppSidebarProps = {
-  chats?: Chat[];
-  currentUser?: CurrentUser;
   className?: string;
   onSettingsClick?: () => void;
   onProfileClick?: () => void;
 };
 
 export function AppSidebar({
-  chats = DEFAULT_CHATS,
-  currentUser = DEFAULT_USER,
   className,
   onSettingsClick,
   onProfileClick,
 }: AppSidebarProps) {
   const { setTheme } = useTheme();
+  const { session } = useAuth();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [chats, setChats] = useState<UserType[] | []>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await axios.get("/get-senders");
+        if (response?.data?.status) setChats(response?.data?.data?.users);
+      } catch (error) {
+        setChats([]);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  });
 
   return (
     <Sidebar className={className}>
@@ -358,46 +85,50 @@ export function AppSidebar({
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-2">
-              {chats.map((chat) => (
-                <SidebarMenuItem key={chat.id}>
-                  <SidebarMenuButton
-                    size="lg"
-                    className="gap-3 rounded-lg data-[state=open]:bg-accent/50 hover:bg-accent"
-                    tooltip={chat.name}
-                  >
-                    <div className="relative">
-                      <Avatar className="size-10">
-                        <AvatarImage
-                          src={
-                            chat.avatarUrl ||
-                            "/placeholder.svg?height=40&width=40&query=chat-avatar"
-                          }
-                          alt={`${chat.name} avatar`}
-                        />
-                        <AvatarFallback className="text-xs">
-                          {chat.name.slice(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      {chat.isOnline ? (
-                        <span
-                          aria-hidden
-                          className="absolute bottom-0 right-0 size-2 rounded-full border-2 border-background bg-emerald-500"
-                        />
-                      ) : null}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate font-semibold text-sm text-foreground">
-                        {chat.name}
+              {loading ? (
+                <Loader className="animate-spin" />
+              ) : (
+                chats.map((chat) => (
+                  <SidebarMenuItem key={chat.id}>
+                    <SidebarMenuButton
+                      size="lg"
+                      className="gap-3 rounded-lg data-[state=open]:bg-accent/50 hover:bg-accent"
+                      tooltip={chat.username}
+                    >
+                      <div className="relative">
+                        <Avatar className="size-10">
+                          <AvatarImage
+                            src={
+                              chat.profile_picture ||
+                              "/placeholder.svg?height=40&width=40&query=chat-avatar"
+                            }
+                            alt={`${chat.username} avatar`}
+                          />
+                          <AvatarFallback className="text-xs">
+                            {chat.firstname.slice(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        {chat.status ? (
+                          <span
+                            aria-hidden
+                            className="absolute bottom-0 right-0 size-2 rounded-full border-2 border-background bg-emerald-500"
+                          />
+                        ) : null}
                       </div>
-                      {chat.lastMessage ? (
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate font-semibold text-sm text-foreground">
+                          {chat.firstname}
+                        </div>
+                        {/* {chat.lastMessage ? (
                         <div className="truncate text-xs text-muted-foreground">
                           {chat.lastMessage}
                         </div>
-                      ) : null}
-                    </div>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                      ) : null} */}
+                      </div>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -413,19 +144,16 @@ export function AppSidebar({
               <div className="flex items-center gap-3">
                 <Avatar className="size-10">
                   <AvatarImage
-                    src={
-                      currentUser.avatarUrl ||
-                      "/placeholder.svg?height=40&width=40&query=current-user-avatar"
-                    }
+                    src={session?.user.profile_picture}
                     alt="Your profile"
                   />
                   <AvatarFallback className="text-xs">
-                    {currentUser.name.slice(0, 2).toUpperCase()}
+                    {session?.user?.username.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 flex-1 text-left">
                   <div className="truncate text-sm font-semibold text-foreground">
-                    {currentUser.name}
+                    {session?.user.firstname}
                   </div>
                   <div className="truncate text-xs text-muted-foreground">
                     Online
@@ -444,7 +172,7 @@ export function AppSidebar({
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">
-                  {currentUser.name}
+                  {session?.user.username}
                 </p>
                 <p className="text-xs leading-none text-muted-foreground">
                   Online

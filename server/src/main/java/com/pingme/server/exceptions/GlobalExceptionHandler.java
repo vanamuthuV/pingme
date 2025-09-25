@@ -45,4 +45,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(responder.createResponse(false, ex.getMessage(), null));
     }
+
+    @ExceptionHandler(ContextPrincipalEmptyException.class)
+    public ResponseEntity<ResponderType> handleContextPrincipalEmpty(ContextPrincipalEmptyException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(responder.createResponse(false, ex.getMessage(), null));
+    }
 }

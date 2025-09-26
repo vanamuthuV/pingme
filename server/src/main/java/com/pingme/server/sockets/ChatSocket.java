@@ -1,5 +1,6 @@
 package com.pingme.server.sockets;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -10,6 +11,7 @@ import com.pingme.server.domain.dto.SenderMessageDTO;
 import com.pingme.server.domain.dto.UserResponseDTO;
 import com.pingme.server.service.MessageService;
 import com.pingme.server.sockets.utils.SocketClientHandler;
+import com.pingme.server.types.RedisEnums;
 import com.pingme.server.types.SocketType;
 import com.pingme.server.utils.Impl.SpringContextBeanGetterImpl;
 import com.pingme.server.utils.RedisUtils;
@@ -34,6 +36,7 @@ public class ChatSocket {
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     private MessageService messageService;
     private RedisUtils redisUtils;
+    private ObjectMapper objectMapper;
 
     public MessageService getMessageService() {
         if(messageService == null)
@@ -47,12 +50,19 @@ public class ChatSocket {
         return redisUtils;
     }
 
+    public ObjectMapper getObjectMapper() {
+        if(objectMapper == null)
+            objectMapper = SpringContextBeanGetterImpl.getBean(ObjectMapper.class);
+        return objectMapper;
+    }
+
     @OnOpen
     public void onOpen(Session session) throws EncodeException, IOException, ExecutionException, InterruptedException {
 
         UserResponseDTO user = (UserResponseDTO) session.getUserProperties().get("user");
 
-        List<String> list = getRedisUtils().getMessages(user.getId());
+        List<String> list = getObjectMapper().readValue(getRedisUtils().getValue(RedisEnums.MESSAGE.name() + user.getId()), new TypeReference<List<String>>(){});
+
         if(list.isEmpty()) {
             System.out.println("From Database");
             MessageResponseDTO[] messages = getMessageService()
@@ -60,14 +70,14 @@ public class ChatSocket {
                     .get();
 
             for(MessageResponseDTO message : messages)
-                getRedisUtils().addMessage(user.getId(), message.getId());
+                getRedisUtils().addMessageValue(RedisEnums.MESSAGE.name() + user.getId(), message.getId());
 
             session
                     .getBasicRemote()
                     .sendText(mapper.writeValueAsString(messages));
         } else {
             System.out.println("From redis");
-            List<String> messagesIds = getRedisUtils().getMessages(user.getId());
+            List<String> messagesIds = getObjectMapper().readValue(getRedisUtils().getValue(RedisEnums.MESSAGE.name() + user.getId()), new TypeReference<List<String>>(){});
             MessageResponseDTO[] messages = getMessageService().getAllMessages(messagesIds).get();
 
             session
@@ -108,10 +118,8 @@ public class ChatSocket {
 
             session.getBasicRemote().sendText("sent message to : " + message.getRecieverId());
         } else {
-            getRedisUtils().addMessage(message.getRecieverId(), messageId.get());
+            getRedisUtils().addMessageValue(RedisEnums.MESSAGE.name() + message.getRecieverId(), messageId.get());
         }
-
-        System.out.println(getRedisUtils().getMessages(message.getRecieverId()));
 
     }
 

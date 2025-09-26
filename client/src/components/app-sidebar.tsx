@@ -64,7 +64,7 @@ export function AppSidebar({
         setLoading(false);
       }
     })();
-  });
+  }, []);
 
   return (
     <Sidebar className={className}>

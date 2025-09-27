@@ -8,6 +8,7 @@ import com.pingme.server.utils.StatusSubscribers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Component
@@ -21,13 +22,20 @@ public class StatusSubscribersImpl implements StatusSubscribers {
 
     @Override
     public void addSubscriber(String user_id, String subscriber_id) {
-        redisUtils.addSubscriberValue(user_id, subscriber_id);
+        redisUtils.addSubscriberValue(user_id.trim(), subscriber_id.trim());
     }
 
     @Override
     public Set<String> getSubscribers(String user_id) throws JsonProcessingException {
+
+        Set<String> subscribers = new HashSet<>();
+
         String subscribersString = redisUtils.getValue(user_id);
-        return objectMapper.readValue(subscribersString, new TypeReference<Set<String>>() {});
+
+        if(subscribersString != null && !subscribersString.trim().isEmpty())
+            subscribers = objectMapper.readValue(subscribersString, new TypeReference<Set<String>>() {});
+
+        return subscribers;
     }
 
     @Override

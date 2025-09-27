@@ -1,5 +1,6 @@
 package com.pingme.server.sockets;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -15,14 +16,13 @@ import com.pingme.server.types.RedisEnums;
 import com.pingme.server.types.SocketType;
 import com.pingme.server.utils.Impl.SpringContextBeanGetterImpl;
 import com.pingme.server.utils.RedisUtils;
+import com.pingme.server.utils.StatusSubscribers;
 import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -37,6 +37,7 @@ public class ChatSocket {
     private MessageService messageService;
     private RedisUtils redisUtils;
     private ObjectMapper objectMapper;
+    private StatusSubscribers statusSubscribers;
 
     public MessageService getMessageService() {
         if(messageService == null)
@@ -56,12 +57,24 @@ public class ChatSocket {
         return objectMapper;
     }
 
+    public StatusSubscribers getStatusSubscribers() {
+        if(statusSubscribers == null)
+            statusSubscribers = SpringContextBeanGetterImpl.getBean(StatusSubscribers.class);
+        return statusSubscribers;
+    }
+
     @OnOpen
     public void onOpen(Session session) throws EncodeException, IOException, ExecutionException, InterruptedException {
 
         UserResponseDTO user = (UserResponseDTO) session.getUserProperties().get("user");
 
-        List<String> list = getObjectMapper().readValue(getRedisUtils().getValue(RedisEnums.MESSAGE.name() + user.getId()), new TypeReference<List<String>>(){});
+        String redisMessages = getRedisUtils().getValue(RedisEnums.MESSAGE.name() + user.getId().trim());
+        List<String> list = new ArrayList<>();
+
+        System.out.println(redisMessages);
+
+        if(redisMessages != null && !redisMessages.trim().isEmpty())
+            list = getObjectMapper().readValue(redisMessages, new TypeReference<List<String>>(){});
 
         if(list.isEmpty()) {
             System.out.println("From Database");
@@ -74,7 +87,9 @@ public class ChatSocket {
 
             session
                     .getBasicRemote()
-                    .sendText(mapper.writeValueAsString(messages));
+                    .sendText(mapper.writeValueAsString(
+                            Map.of("type", "message", "payload", messages)
+                    ));
         } else {
             System.out.println("From redis");
             List<String> messagesIds = getObjectMapper().readValue(getRedisUtils().getValue(RedisEnums.MESSAGE.name() + user.getId()), new TypeReference<List<String>>(){});
@@ -82,8 +97,24 @@ public class ChatSocket {
 
             session
                     .getBasicRemote()
-                    .sendText(mapper.writeValueAsString(messages));
+                    .sendText(mapper.writeValueAsString(
+                            Map.of("type", "message", "payload", messages)
+                    ));
         }
+
+        Set<String> subscribers = getStatusSubscribers().getSubscribers(RedisEnums.CHAT_SUBS.name() + user.getId().trim());
+
+        System.out.println(subscribers + "the subscriber");
+
+        for(String s : subscribers)
+            if(clients.isClientConnected(SocketType.CHAT, s))
+                clients.getSession(SocketType.CHAT, s).getAsyncRemote().sendText(
+                        getObjectMapper().writeValueAsString(Map.of(
+                            "type" ,"status", "payload", Map.of(
+                                    "status", "ONLINE", "user_id", user.getId()
+                                )
+                        ))
+                );
 
         clients.addClient(SocketType.CHAT, user.getId().trim(), session);
         System.out.println("From chatsocket" + user);
@@ -124,9 +155,24 @@ public class ChatSocket {
     }
 
     @OnClose
-    public void onClose(Session session) {
+    public void onClose(Session session) throws IOException {
         UserResponseDTO user = (UserResponseDTO) session.getUserProperties().get("user");
         clients.removeClient(SocketType.CHAT, user.getId());
+
+        Set<String> subscribers = getStatusSubscribers().getSubscribers(RedisEnums.CHAT_SUBS.name() + user.getId().trim());
+
+        System.out.println(subscribers + "the subscriber");
+
+        for(String s : subscribers)
+            if(clients.isClientConnected(SocketType.CHAT, s))
+                clients.getSession(SocketType.CHAT, s).getAsyncRemote().sendText(
+                        getObjectMapper().writeValueAsString(Map.of(
+                                "type" ,"status", "payload",  Map.of(
+                                        "status", "OFFLINE", "user_id", user.getId()
+                                )))
+                );
+
+
 
         System.out.println("client with ID " + session.getId() + " left the chat");
     }

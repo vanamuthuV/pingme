@@ -58,7 +58,6 @@ public class OauthServiceImpl implements OauthService {
             Optional<UserEntity> isuser = authRepository.findByEmail(user.getEmail());
 
             if(!isuser.isEmpty()) {
-                System.out.println("Already there");
                 String token = jwtUtils.generateToken(userMapper.mapFrom(isuser.get()));
 
                 isuser.get().setAccess_token(token);
@@ -68,7 +67,6 @@ public class OauthServiceImpl implements OauthService {
 
             UserEntity savedUser = createUser(user);
             String token = jwtUtils.generateToken(userMapper.mapFrom(savedUser));
-            System.out.println("The token " + token);
             savedUser.setAccess_token(token);
             savedUser = authRepository.save(savedUser);
 
@@ -113,7 +111,6 @@ public class OauthServiceImpl implements OauthService {
 
     @Override
     public ResponseEntity<GoogleUserDTO> getOauthUserDetails(String accessToken) {
-        System.out.println("The accessToken " + accessToken);
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(accessToken);

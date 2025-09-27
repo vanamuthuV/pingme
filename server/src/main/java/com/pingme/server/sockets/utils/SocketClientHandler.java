@@ -4,6 +4,8 @@ import com.pingme.server.types.SocketType;
 import jakarta.websocket.Session;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -22,6 +24,7 @@ public class SocketClientHandler {
     }
 
     public void removeClient(SocketType type, String userId) {
+        System.out.println("Remving " + userId);
         switch (type) {
             case CHAT -> chatClients.remove(userId);
             case NOTIFICATION -> notificationClients.remove(userId);
@@ -32,10 +35,10 @@ public class SocketClientHandler {
     public Session getSession(SocketType type, String userId) {
         switch (type) {
             case CHAT -> {
-                return chatClients.getOrDefault(userId, null);
+                return chatClients.getOrDefault(userId.trim(), null);
             }
             case NOTIFICATION -> {
-                return notificationClients.getOrDefault(userId, null);
+                return notificationClients.getOrDefault(userId.trim(), null);
             }
 
         }
@@ -59,7 +62,7 @@ public class SocketClientHandler {
     public Boolean isClientConnected(SocketType type, String userId) {
         switch (type) {
             case CHAT -> {
-                return chatClients.containsKey(userId);
+                return chatClients.containsKey(userId.trim());
             }
 
             case NOTIFICATION -> {
@@ -80,6 +83,20 @@ public class SocketClientHandler {
             }
         }
         return null;
+    }
+
+    public Set<String> getConnectedClients(SocketType type) {
+
+        switch (type) {
+            case CHAT -> {
+                return chatClients.keySet();
+            }
+            case NOTIFICATION -> {
+                return notificationClients.keySet();
+            }
+        }
+        return null;
+
     }
 
 }

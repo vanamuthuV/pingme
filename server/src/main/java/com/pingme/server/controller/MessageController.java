@@ -1,18 +1,27 @@
 package com.pingme.server.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.pingme.server.domain.dto.UserResponseDTO;
 import com.pingme.server.exceptions.ContextPrincipalEmptyException;
 import com.pingme.server.service.Impl.MessageServiceImpl;
 import com.pingme.server.service.MessageService;
+import com.pingme.server.sockets.utils.SocketClientHandler;
+import com.pingme.server.types.RedisEnums;
 import com.pingme.server.types.ResponderType;
+import com.pingme.server.types.SocketType;
 import com.pingme.server.types.UserResponseDTOList;
 import com.pingme.server.utils.Impl.ResponderImpl;
+import com.pingme.server.utils.Impl.StatusSubscribersImpl;
+import com.pingme.server.utils.Responder;
+import com.pingme.server.utils.StatusSubscribers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.Socket;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -20,25 +29,49 @@ import java.util.concurrent.ExecutionException;
 public class MessageController {
 
     private final MessageService messageService;
-    private final ResponderImpl responder;
+    private final Responder responder;
+    private final StatusSubscribers statusSubscribers;
+    private final SocketClientHandler socketClientHandler;
 
-    public MessageController(MessageService messageService, ResponderImpl responder){
+    public MessageController(
+            MessageService messageService,
+            ResponderImpl responder,
+            StatusSubscribers statusSubscribers,
+            SocketClientHandler socketClientHandler
+    ){
         this.messageService = messageService;
         this.responder = responder;
+        this.statusSubscribers = statusSubscribers;
+        this.socketClientHandler = socketClientHandler;
     }
 
     @GetMapping("/get-senders")
-    public ResponseEntity<ResponderType> getDistinctSendersByReceiverId() throws ExecutionException, InterruptedException {
+    public ResponseEntity<ResponderType> getDistinctSendersByReceiverId() throws ExecutionException, InterruptedException, JsonProcessingException {
 
+        // get current user data
         UserResponseDTO user = (UserResponseDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        // check if the user is null
         if(user == null) {
             System.out.println("cannot find data in principal " + this.getClass());
             throw new ContextPrincipalEmptyException("can not get user session");
         }
 
+        // get the chat persons
         CompletableFuture<List<UserResponseDTO>> senderPromise = messageService.getDistinctSendersByReceiverId(user.getId());
         List<UserResponseDTO> senders = senderPromise.get();
+
+        // store the user_id of the sender for the websocket based status updates
+        if(statusSubscribers.getSubscribers(RedisEnums.CHAT_SUBS.name() + user.getId().trim()).isEmpty())
+            for(UserResponseDTO usr : senders)
+                statusSubscribers.addSubscriber(RedisEnums.CHAT_SUBS.name() + user.getId().trim(), usr.getId().trim());
+
+        Set<String> clients = socketClientHandler.getConnectedClients(SocketType.CHAT);
+
+        for(UserResponseDTO usr : senders)
+            if(clients.contains(usr.getId().trim()))
+                usr.setStatus("ONLINE");
+            else usr.setStatus("OFFLINE");
 
         UserResponseDTOList users = new UserResponseDTOList(senders);
 

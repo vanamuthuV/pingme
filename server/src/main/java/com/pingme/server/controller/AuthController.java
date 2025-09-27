@@ -47,7 +47,6 @@ public class AuthController {
     @GetMapping("/verify")
     public ResponseEntity<ResponderType> verifyRequest() {
         UserResponseDTO user = (UserResponseDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        System.out.println(user);
         return ResponseEntity.ok(
                 responder.createResponse(true, "session fetched", user)
         );

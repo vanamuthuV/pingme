@@ -36,6 +36,8 @@ import { useEffect, useState } from "react";
 import axios from "../api/axios";
 import type { User as UserType } from "../types/user";
 import { useAuth } from "../hooks/use-auth";
+import { useChat } from "../hooks/use-chat";
+import type { Chat } from "../types/chat";
 
 type AppSidebarProps = {
   className?: string;
@@ -50,16 +52,22 @@ export function AppSidebar({
 }: AppSidebarProps) {
   const { setTheme } = useTheme();
   const { session } = useAuth();
+  const { chat, setChat } = useChat();
   const [loading, setLoading] = useState<boolean>(true);
-  const [chats, setChats] = useState<UserType[] | []>([]);
 
   useEffect(() => {
     (async () => {
       try {
         const response = await axios.get("/get-senders");
-        if (response?.data?.status) setChats(response?.data?.data?.users);
+        if (response?.data?.status) {
+          let chats: Chat[] = [];
+          response?.data?.data?.users.map((user: UserType) =>
+            chats.push({ user, chats: [] })
+          );
+          setChat(chats);
+        }
       } catch (error) {
-        setChats([]);
+        setChat([]);
       } finally {
         setLoading(false);
       }
@@ -88,27 +96,27 @@ export function AppSidebar({
               {loading ? (
                 <Loader className="animate-spin" />
               ) : (
-                chats.map((chat) => (
-                  <SidebarMenuItem key={chat.id}>
+                chat.map((indchat) => (
+                  <SidebarMenuItem key={indchat.user.id}>
                     <SidebarMenuButton
                       size="lg"
                       className="gap-3 rounded-lg data-[state=open]:bg-accent/50 hover:bg-accent"
-                      tooltip={chat.username}
+                      tooltip={indchat.user.username}
                     >
                       <div className="relative">
                         <Avatar className="size-10">
                           <AvatarImage
                             src={
-                              chat.profile_picture ||
+                              indchat.user.profile_picture ||
                               "/placeholder.svg?height=40&width=40&query=chat-avatar"
                             }
-                            alt={`${chat.username} avatar`}
+                            alt={`${indchat.user.username} avatar`}
                           />
                           <AvatarFallback className="text-xs">
-                            {chat.firstname.slice(0, 2).toUpperCase()}
+                            {indchat.user.firstname.slice(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
-                        {chat.status ? (
+                        {indchat.user.status === "ONLINE" ? (
                           <span
                             aria-hidden
                             className="absolute bottom-0 right-0 size-2 rounded-full border-2 border-background bg-emerald-500"
@@ -117,7 +125,7 @@ export function AppSidebar({
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="truncate font-semibold text-sm text-foreground">
-                          {chat.firstname}
+                          {indchat.user.firstname}
                         </div>
                         {/* {chat.lastMessage ? (
                         <div className="truncate text-xs text-muted-foreground">

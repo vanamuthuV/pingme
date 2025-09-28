@@ -6,10 +6,7 @@ import com.pingme.server.exceptions.ContextPrincipalEmptyException;
 import com.pingme.server.service.Impl.MessageServiceImpl;
 import com.pingme.server.service.MessageService;
 import com.pingme.server.sockets.utils.SocketClientHandler;
-import com.pingme.server.types.RedisEnums;
-import com.pingme.server.types.ResponderType;
-import com.pingme.server.types.SocketType;
-import com.pingme.server.types.UserResponseDTOList;
+import com.pingme.server.types.*;
 import com.pingme.server.utils.Impl.ResponderImpl;
 import com.pingme.server.utils.Impl.StatusSubscribersImpl;
 import com.pingme.server.utils.Responder;
@@ -17,6 +14,8 @@ import com.pingme.server.utils.StatusSubscribers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.Socket;
@@ -78,7 +77,20 @@ public class MessageController {
         return ResponseEntity.ok(
                 responder.createResponse(true, "senders fetch success", users)
         );
+    }
 
+    @PostMapping("/get-last-message")
+    public ResponseEntity<ResponderType> getLastMessages(@RequestBody LastMessageRequest body) throws ExecutionException, InterruptedException {
+
+        UserResponseDTO user = (UserResponseDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        List<String> senders = body.getSenders();
+
+        List<LastMessageProjection> lastMessages = messageService.getLastMessages(user.getId(), senders).get();
+
+        return ResponseEntity.ok(
+                responder.createResponse(true, "last message fetch success", new LastMessageList(lastMessages))
+        );
     }
 
 }

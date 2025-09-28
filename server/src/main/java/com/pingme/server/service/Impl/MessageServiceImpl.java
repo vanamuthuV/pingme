@@ -9,6 +9,7 @@ import com.pingme.server.mappers.Impl.MessageMapperImpl;
 import com.pingme.server.mappers.Impl.UserMapperImpl;
 import com.pingme.server.repository.MessageRepository;
 import com.pingme.server.service.MessageService;
+import com.pingme.server.types.LastMessageProjection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -87,6 +88,14 @@ public class MessageServiceImpl implements MessageService {
 
         return CompletableFuture.completedFuture(sendersDTO);
 
+    }
+
+    @Async
+    @Override
+    public CompletableFuture<List<LastMessageProjection>> getLastMessages(String receiverId, List<String> sender) {
+        List<LastMessageProjection> lastMessages = messageRepository.findChatsLastMessage(receiverId, sender);
+
+        return CompletableFuture.completedFuture(lastMessages);
     }
 
 

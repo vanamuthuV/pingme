@@ -7,15 +7,18 @@ import { Toaster } from "./components/ui/sonner.tsx";
 import { SessionProvider } from "./context/session-context.tsx";
 import { ChatProvider } from "./context/chat-context.tsx";
 import { HandleWebSocketConnection } from "./init/socket-connector.tsx";
+import { SelectedChatProvider } from "./context/selected-chat-context.tsx";
 
 createRoot(document.getElementById("root")!).render(
   // <StrictMode>
   <ThemeProvider defaultTheme="dark">
     <SessionProvider>
       <ChatProvider>
-        <App />
-        <Toaster />
-        <HandleWebSocketConnection />
+        <SelectedChatProvider>
+          <App />
+          <Toaster />
+          <HandleWebSocketConnection />
+        </SelectedChatProvider>
       </ChatProvider>
     </SessionProvider>
   </ThemeProvider>

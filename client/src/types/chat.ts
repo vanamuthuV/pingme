@@ -3,7 +3,12 @@ import type { User } from "./user";
 
 type Chat = {
   user: User;
-  chats: Message[];
+  lastmessage: string;
 };
 
-export { type Chat };
+type NullableChat = {
+  user: User | null;
+  chats: Message[] | [];
+};
+
+export { type Chat, type NullableChat };

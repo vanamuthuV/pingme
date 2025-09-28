@@ -26,18 +26,21 @@ import {
   MessagesSquare,
   ChevronUp,
   Settings,
-  User,
   Sun,
   Moon,
   Monitor,
   Loader,
+  User,
 } from "lucide-react";
+import { Skeleton } from "./ui/skeleton";
 import { useEffect, useState } from "react";
 import axios from "../api/axios";
 import type { User as UserType } from "../types/user";
 import { useAuth } from "../hooks/use-auth";
 import { useChat } from "../hooks/use-chat";
 import type { Chat } from "../types/chat";
+import { useSelectedChat } from "../hooks/use-selected-chat";
+import type { SelectedChatType } from "../types/selected-chat";
 
 type AppSidebarProps = {
   className?: string;
@@ -53,7 +56,9 @@ export function AppSidebar({
   const { setTheme } = useTheme();
   const { session } = useAuth();
   const { chat, setChat } = useChat();
+  const { selectedChat, setSelectedChat } = useSelectedChat();
   const [loading, setLoading] = useState<boolean>(true);
+  const [messageLoading, setMessageLoading] = useState<boolean>(true);
 
   useEffect(() => {
     (async () => {
@@ -62,10 +67,52 @@ export function AppSidebar({
         if (response?.data?.status) {
           let chats: Chat[] = [];
           response?.data?.data?.users.map((user: UserType) =>
-            chats.push({ user, chats: [] })
+            chats.push({ user, lastmessage: "" })
           );
           setChat(chats);
         }
+
+        const senders = response.data?.data?.users.map(
+          (user: UserType) => user.id
+        );
+
+        const messagesResponse = await axios.post("/get-last-message", {
+          senders,
+        });
+
+        const sendersLastMessages =
+          messagesResponse?.data?.data?.lastMessages.map((element: any) => {
+            if (element.senderId === session?.user.id) {
+              return {
+                message: element.message,
+                senderId: element.recieverId, // other person in convo
+              };
+            } else {
+              return {
+                message: element.message,
+                senderId: element.senderId,
+              };
+            }
+          });
+
+        console.log(sendersLastMessages);
+
+        if (messagesResponse?.data?.status) {
+          setChat((prev) =>
+            prev.map((prevChat) => {
+              const foundMsg = sendersLastMessages.find(
+                (message: any) =>
+                  message.senderId.trim() === prevChat.user.id.trim()
+              );
+
+              return foundMsg
+                ? { ...prevChat, lastmessage: foundMsg.message }
+                : prevChat;
+            })
+          );
+        }
+
+        setMessageLoading(false)
       } catch (error) {
         setChat([]);
       } finally {
@@ -73,6 +120,18 @@ export function AppSidebar({
       }
     })();
   }, []);
+
+  const handleSelectedChat = (userId: string, user: UserType) => {
+    setSelectedChat((prev) => {
+      return {
+        selectedchat: userId,
+        chat: {
+          ...prev.chat,
+          user: user,
+        },
+      };
+    });
+  };
 
   return (
     <Sidebar className={className}>
@@ -97,10 +156,18 @@ export function AppSidebar({
                 <Loader className="animate-spin" />
               ) : (
                 chat.map((indchat) => (
-                  <SidebarMenuItem key={indchat.user.id}>
+                  <SidebarMenuItem
+                    onClick={() =>
+                      handleSelectedChat(indchat.user.id, indchat.user)
+                    }
+                    key={indchat.user.id}
+                  >
                     <SidebarMenuButton
                       size="lg"
-                      className="gap-3 rounded-lg data-[state=open]:bg-accent/50 hover:bg-accent"
+                      className={`gap-3 rounded-lg data-[state=open]:bg-accent/50 hover:bg-accent ${
+                        selectedChat?.selectedchat === indchat.user.id &&
+                        "bg-accent"
+                      }`}
                       tooltip={indchat.user.username}
                     >
                       <div className="relative">
@@ -127,11 +194,13 @@ export function AppSidebar({
                         <div className="truncate font-semibold text-sm text-foreground">
                           {indchat.user.firstname}
                         </div>
-                        {/* {chat.lastMessage ? (
-                        <div className="truncate text-xs text-muted-foreground">
-                          {chat.lastMessage}
-                        </div>
-                      ) : null} */}
+                        {messageLoading ? (
+                          <Skeleton className="h-3 mt-1" />
+                        ) : (
+                          <div className="truncate text-xs text-muted-foreground">
+                            {indchat.lastmessage}
+                          </div>
+                        )}
                       </div>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -228,7 +297,6 @@ export function AppSidebar({
         </DropdownMenu>
       </SidebarFooter>
 
-      {/* Rail keeps a slim clickable area and tooltips when collapsed */}
       <SidebarRail />
     </Sidebar>
   );

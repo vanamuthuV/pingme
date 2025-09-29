@@ -1,10 +1,12 @@
 package com.pingme.server.service;
 
 import com.pingme.server.domain.dto.MessageIntermediateDTO;
+import com.pingme.server.domain.dto.MessageOnlyResponseDTO;
 import com.pingme.server.domain.dto.MessageResponseDTO;
 import com.pingme.server.domain.dto.UserResponseDTO;
 import com.pingme.server.domain.entity.MessageEntity;
 import com.pingme.server.types.LastMessageProjection;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -16,5 +18,11 @@ public interface MessageService {
     public CompletableFuture<MessageResponseDTO[]> getAllMessages(List<String> messageIds);
     public CompletableFuture<List<UserResponseDTO>> getDistinctSendersByReceiverId(String id);
     public CompletableFuture<List<LastMessageProjection>> getLastMessages(String receiverId, List<String> sender);
+    public CompletableFuture<Page<MessageOnlyResponseDTO>> getMessagesBetweenUser(
+            int page,
+            int size,
+            String receiver,
+            String sender
+    );
 
  }

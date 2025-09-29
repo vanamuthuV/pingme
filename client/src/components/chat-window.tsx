@@ -1,10 +1,22 @@
+import { useEffect } from "react";
 import { useSelectedChat } from "../hooks/use-selected-chat";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { X } from "lucide-react";
+import axios from "../api/axios";
 
 export function ChatPanel() {
   const { selectedChat, setSelectedChat } = useSelectedChat();
+
+  useEffect(() => {
+    (async () => {
+      const response = await axios.get(
+        `/get-message?sender=${selectedChat.selectedchat}&page=0&size=20`
+      );
+
+      console.log(response?.data);
+    })();
+  }, []);
 
   const handleCloseChat = () => {
     setSelectedChat((prev) => {

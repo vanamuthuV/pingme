@@ -31,6 +31,7 @@ import {
   Monitor,
   Loader,
   User,
+  Plus,
 } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
 import { useEffect, useState } from "react";
@@ -40,7 +41,6 @@ import { useAuth } from "../hooks/use-auth";
 import { useChat } from "../hooks/use-chat";
 import type { Chat } from "../types/chat";
 import { useSelectedChat } from "../hooks/use-selected-chat";
-import type { SelectedChatType } from "../types/selected-chat";
 
 type AppSidebarProps = {
   className?: string;
@@ -112,7 +112,7 @@ export function AppSidebar({
           );
         }
 
-        setMessageLoading(false)
+        setMessageLoading(false);
       } catch (error) {
         setChat([]);
       } finally {
@@ -135,13 +135,19 @@ export function AppSidebar({
 
   return (
     <Sidebar className={className}>
-      <SidebarHeader className="border-b">
-        <div className="flex items-center gap-2 px-2 py-2">
-          <MessagesSquare
-            className="size-4 text-muted-foreground"
-            aria-hidden
-          />
-          <span className="font-medium text-sm text-foreground">Chats</span>
+      <SidebarHeader className="border-b flex">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 px-2 py-2">
+            <MessagesSquare
+              className="size-4 text-muted-foreground"
+              aria-hidden
+            />
+            <span className="font-medium text-sm text-foreground">Chats</span>
+          </div>
+          <Button className="h-6 rounded-sm border-0">
+            <Plus className="size-3" aria-hidden />
+            <span className="text-[10px]">New</span>
+          </Button>
         </div>
       </SidebarHeader>
 
@@ -150,7 +156,7 @@ export function AppSidebar({
           <SidebarGroupLabel className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
             Recent
           </SidebarGroupLabel>
-          <SidebarGroupContent>
+          <SidebarGroupContent className="mt-2">
             <SidebarMenu className="gap-2">
               {loading ? (
                 <Loader className="animate-spin" />
@@ -171,7 +177,7 @@ export function AppSidebar({
                       tooltip={indchat.user.username}
                     >
                       <div className="relative">
-                        <Avatar className="size-10">
+                        <Avatar className="size-8">
                           <AvatarImage
                             src={
                               indchat.user.profile_picture ||
@@ -186,18 +192,18 @@ export function AppSidebar({
                         {indchat.user.status === "ONLINE" ? (
                           <span
                             aria-hidden
-                            className="absolute bottom-0 right-0 size-2 rounded-full border-2 border-background bg-emerald-500"
+                            className="absolute bottom-0 right-0 size-3 rounded-full border-2 border-background bg-emerald-500"
                           />
                         ) : null}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="truncate font-semibold text-sm text-foreground">
+                        <div className="truncate font-semibold text-xs text-foreground">
                           {indchat.user.firstname}
                         </div>
                         {messageLoading ? (
                           <Skeleton className="h-3 mt-1" />
                         ) : (
-                          <div className="truncate text-xs text-muted-foreground">
+                          <div className="truncate text-[9px] text-muted-foreground">
                             {indchat.lastmessage}
                           </div>
                         )}

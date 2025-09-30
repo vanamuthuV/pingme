@@ -86,7 +86,7 @@ public class ChatSocket {
                 getRedisUtils().addMessageValue(RedisEnums.MESSAGE.name() + user.getId(), message.getId());
 
             session
-                    .getBasicRemote()
+                    .getAsyncRemote()
                     .sendText(mapper.writeValueAsString(
                             Map.of("type", "message", "payload", messages)
                     ));
@@ -96,7 +96,7 @@ public class ChatSocket {
             MessageResponseDTO[] messages = getMessageService().getAllMessages(messagesIds).get();
 
             session
-                    .getBasicRemote()
+                    .getAsyncRemote()
                     .sendText(mapper.writeValueAsString(
                             Map.of("type", "message", "payload", messages)
                     ));

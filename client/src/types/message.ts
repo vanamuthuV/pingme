@@ -12,4 +12,16 @@ type Message = {
   updatedAt: string;
 };
 
-export { type Message };
+type RawMessage = {
+  id: string;
+  message: string;
+  createdAt: string;
+  delivered: boolean;
+  edited: boolean;
+  receiver: string;
+  seen: boolean;
+  sender: string;
+  updatedAt: string;
+};
+
+export { type Message, type RawMessage };

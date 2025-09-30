@@ -1,8 +1,10 @@
 import { useChat } from "../hooks/use-chat";
+import { useSelectedChat } from "../hooks/use-selected-chat";
 import type { SocketPayload } from "../types/socket-payload";
 
 export function useSocketHandler() {
   const { setChat } = useChat();
+  const { selectedChat, setSelectedChat } = useSelectedChat();
 
   const payloadParser = (payload: string): SocketPayload => {
     return JSON.parse(payload);
@@ -27,6 +29,27 @@ export function useSocketHandler() {
             return chat;
           })
         );
+
+        setSelectedChat((prev: any) => {
+          if (
+            selectedChat.selectedchat.trim() ===
+            parsedPayload.payload?.user_id.trim()
+          ) {
+            return {
+              ...prev,
+              chat: {
+                ...prev.chat,
+                user: {
+                  ...prev.chat.user,
+                  status: parsedPayload.payload.status,
+                },
+              },
+            };
+          } else {
+            return prev;
+          }
+        });
+
         break;
       }
       case "message": {

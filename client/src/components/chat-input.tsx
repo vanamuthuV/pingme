@@ -4,15 +4,27 @@ import * as React from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Send } from "lucide-react";
+import { toast } from "sonner";
+import { WebSocketConfig } from "../config/websocket-config";
 
 export function ChatInput() {
-  const [message, setMessage] = React.useState("");
+  const ref = React.useRef<HTMLInputElement>(null);
+  const ws = new WebSocketConfig();
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // For demo purposes, we just clear the input.
-    // Hook this up to your send handler as needed.
-    setMessage("");
+    console.log(ref.current?.value);
+
+    if (
+      ref.current &&
+      ref.current.value !== null &&
+      ref.current.value.trim() != ""
+    ) {
+      ws.sendMessage(ref.current.value);
+      ref.current.value = "";
+    } else {
+      toast("Empty message cannot be sent");
+    }
   }
 
   return (
@@ -26,8 +38,7 @@ export function ChatInput() {
         </label>
         <Input
           id="message"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          ref={ref}
           placeholder="Type a message..."
           className="flex-1"
           autoComplete="off"

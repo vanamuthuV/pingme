@@ -172,8 +172,6 @@ public class ChatSocket {
                                 )))
                 );
 
-
-
         System.out.println("client with ID " + session.getId() + " left the chat");
     }
 

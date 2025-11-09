@@ -15,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
-import { Button } from "../components/ui/button";
+import { useState } from "react";
 
 const MessageEntity = ({
   id,
@@ -38,8 +38,7 @@ const MessageEntity = ({
   isMine: boolean;
   profile: string;
 }): React.ReactNode => {
-
-    console.log(isMine)
+  const [hover, setHover] = useState(false);
 
   return (
     <div
@@ -65,68 +64,80 @@ const MessageEntity = ({
             isMine ? "items-end" : "items-start"
           } flex-1 min-w-0`}
         >
-          {/* Three-dot menu - connected to message bubble (only for my messages) */}
-          {isMine && (
-            <div className="flex w-full justify-end">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <MoreHorizontal className="h-3 w-3 sm:h-4 sm:w-4 cursor-pointer" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="w-40 sm:w-48"
-                  side="top"
-                >
-                  <DropdownMenuItem
-                    //   onClick={handleReply}
-                    className="cursor-pointer text-xs sm:text-sm"
-                  >
-                    <Reply className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                    Reply
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    //   onClick={handleCopy}
-                    className="cursor-pointer text-xs sm:text-sm"
-                  >
-                    <Copy className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                    Copy
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    //   onClick={handleEdit}
-                    className="cursor-pointer text-xs sm:text-sm"
-                  >
-                    <Pencil className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    //   onClick={handleDelete}
-                    className="cursor-pointer text-destructive focus:text-destructive text-xs sm:text-sm"
-                  >
-                    <Trash2 className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          )}
-
           <div
-            className={`group relative w-auto px-1 sm:px-4 py-0.5 shadow-sm transition-all duration-200 hover:shadow-md ${
+            className={`group relative w-auto px-1 sm:px-2 py-0.5 shadow-sm transition-all duration-200 hover:shadow-md ${
               isMine
                 ? "bg-primary text-primary-foreground text-right rounded-tr-sm rounded hover:bg-primary/90"
                 : "bg-secondary text-secondary-foreground rounded text-left hover:bg-secondary/80 border border-border"
             }`}
           >
-            <div className="relative z-10 break-words text-xs sm:text-sm leading-relaxed">
-              {message}
-            </div>
+            <div
+              onMouseEnter={() => setHover(true)}
+              onMouseLeave={() => setHover(false)}
+              className="relative w-auto z-10 break-words text-xs sm:text-sm leading-relaxed flex items-center gap-2 justify-center"
+            >
+              <span>{message}</span>
 
+              {isMine &&
+                (hover ? (
+                  <div className="flex flex-1 w-full justify-end">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <MoreHorizontal className="h-2 w-2 sm:h-3 sm:w-3 cursor-pointer" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="w-40 sm:w-48"
+                        side="top"
+                      >
+                        <DropdownMenuItem
+                          //   onClick={handleReply}
+                          className="cursor-pointer text-xs sm:text-sm"
+                        >
+                          <Reply className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                          Reply
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          //   onClick={handleCopy}
+                          className="cursor-pointer text-xs sm:text-sm"
+                        >
+                          <Copy className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                          Copy
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          //   onClick={handleEdit}
+                          className="cursor-pointer text-xs sm:text-sm"
+                        >
+                          <Pencil className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          //   onClick={handleDelete}
+                          className="cursor-pointer text-destructive focus:text-destructive text-xs sm:text-sm"
+                        >
+                          <Trash2 className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                ) : (
+                  <span className="flex items-center flex-shrink-0">
+                    {seen ? (
+                      <CheckCheck className="h-3 w-3 text-blue-500" />
+                    ) : delivered ? (
+                      <CheckCheck className="h-3 w-3" />
+                    ) : (
+                      <Check className="h-3 w-3" />
+                    )}
+                  </span>
+                ))}
+            </div>
           </div>
 
-          {/* Timestamp and Status */}
           <div
-            className={`flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-muted-foreground mt-1 px-1 ${
+            className={`flex items-center gap-1 sm:gap-2 text-[10px] sm:text-[6px] text-muted-foreground mt-1 px-1 ${
               isMine ? "flex-row-reverse" : "flex-row"
             }`}
           >
@@ -145,23 +156,9 @@ const MessageEntity = ({
               })}
             </span>
 
-            {/* Edited indicator */}
             {edited && (
               <span className="text-muted-foreground/70 italic whitespace-nowrap">
                 (edited)
-              </span>
-            )}
-
-            {/* Read receipts for sent messages */}
-            {isMine && (
-              <span className="flex items-center flex-shrink-0">
-                {seen ? (
-                  <CheckCheck className="h-3 w-3 text-blue-500" />
-                ) : delivered ? (
-                  <CheckCheck className="h-3 w-3" />
-                ) : (
-                  <Check className="h-3 w-3" />
-                )}
               </span>
             )}
           </div>

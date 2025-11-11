@@ -39,6 +39,7 @@ const MessageEntity = ({
   profile: string;
 }): React.ReactNode => {
   const [hover, setHover] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
     <div
@@ -73,17 +74,33 @@ const MessageEntity = ({
           >
             <div
               onMouseEnter={() => setHover(true)}
-              onMouseLeave={() => setHover(false)}
+              onMouseLeave={() => {
+                // Only hide if dropdown is not open
+                if (!dropdownOpen) {
+                  setHover(false);
+                }
+              }}
               className="relative w-auto z-10 break-words text-xs sm:text-sm leading-relaxed flex items-center gap-2 justify-center"
             >
               <span>{message}</span>
 
               {isMine &&
-                (hover ? (
+                (hover || dropdownOpen ? (
                   <div className="flex flex-1 w-full justify-end">
-                    <DropdownMenu>
+                    <DropdownMenu
+                      open={dropdownOpen}
+                      onOpenChange={(open) => {
+                        setDropdownOpen(open);
+                        // When dropdown closes, also hide the hover state
+                        if (!open) {
+                          setHover(false);
+                        }
+                      }}
+                    >
                       <DropdownMenuTrigger asChild>
-                        <MoreHorizontal className="h-2 w-2 sm:h-3 sm:w-3 cursor-pointer" />
+                        <button className="focus:outline-none">
+                          <MoreHorizontal className="h-2 w-2 sm:h-3 sm:w-3 cursor-pointer" />
+                        </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
                         align="end"

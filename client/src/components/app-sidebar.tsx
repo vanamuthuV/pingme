@@ -67,7 +67,7 @@ export function AppSidebar({
         if (response?.data?.status) {
           let chats: Chat[] = [];
           response?.data?.data?.users.map((user: UserType) =>
-            chats.push({ user, lastmessage: "" })
+            chats.push({ user, lastmessage: ""})
           );
           setChat(chats);
         }

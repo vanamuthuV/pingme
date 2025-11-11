@@ -1,4 +1,4 @@
-import type { Message } from "./message";
+import type { RawMessage } from "./message";
 import type { User } from "./user";
 
 type Chat = {
@@ -8,7 +8,7 @@ type Chat = {
 
 type NullableChat = {
   user: User | null;
-  chats: Message[] | [];
+  chats: RawMessage[] | [];
 };
 
 export { type Chat, type NullableChat };

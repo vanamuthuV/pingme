@@ -8,6 +8,7 @@ import { SessionProvider } from "./context/session-context.tsx";
 import { ChatProvider } from "./context/chat-context.tsx";
 import { HandleWebSocketConnection } from "./init/socket-connector.tsx";
 import { SelectedChatProvider } from "./context/selected-chat-context.tsx";
+import { ChatDataProvider } from "./context/chat-data-context.tsx";
 
 createRoot(document.getElementById("root")!).render(
   // <StrictMode>
@@ -15,9 +16,11 @@ createRoot(document.getElementById("root")!).render(
     <SessionProvider>
       <ChatProvider>
         <SelectedChatProvider>
-          <App />
-          <Toaster />
-          <HandleWebSocketConnection />
+          <ChatDataProvider>
+            <App />
+            <Toaster />
+            <HandleWebSocketConnection />
+          </ChatDataProvider>
         </SelectedChatProvider>
       </ChatProvider>
     </SessionProvider>

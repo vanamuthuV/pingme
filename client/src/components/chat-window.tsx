@@ -8,6 +8,8 @@ import type { RawMessage } from "../types/message";
 import { useAuth } from "../hooks/use-auth";
 import { Loader2 } from "lucide-react";
 import { MessageEntity } from "./message-entity";
+import { useChat } from "../hooks/use-chat";
+import { useData } from "../hooks/use-data";
 
 async function fetchMessages({
   sender_id,
@@ -32,7 +34,9 @@ const ChatWindow = () => {
 
   const batchSize = 15;
 
-  const [chatHistory, setChatHistory] = useState<RawMessage[]>([]);
+  const { chatHistory, setChatHistory } = useData();
+
+  // const [chatHistory, setChatHistory] = useState<RawMessage[]>([]);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
   const [initialLoad, setInitialLoad] = useState<boolean>(true);
@@ -41,7 +45,6 @@ const ChatWindow = () => {
   const currentPageRef = useRef<number>(0);
   const lastScrollTopRef = useRef<number>(0);
 
-  // Initial load effect
   useEffect(() => {
     const loadInitialMessages = async () => {
       setInitialLoad(true);
@@ -62,7 +65,6 @@ const ChatWindow = () => {
         setChatHistory(content.reverse());
         currentPageRef.current = 1;
 
-        // Scroll to bottom after render
         setTimeout(() => {
           if (containerRef.current) {
             containerRef.current.scrollTop = containerRef.current.scrollHeight;
@@ -79,7 +81,6 @@ const ChatWindow = () => {
     loadInitialMessages();
   }, [selectedChat.selectedchat]);
 
-  // Load more messages
   const loadMoreMessages = useCallback(async () => {
     if (isFetchingRef.current || !hasMore || initialLoad) {
       return;
@@ -95,7 +96,6 @@ const ChatWindow = () => {
       return;
     }
 
-    // Save current scroll position
     const prevScrollHeight = container.scrollHeight;
     const prevScrollTop = container.scrollTop;
 

@@ -7,6 +7,7 @@ import com.pingme.server.domain.dto.UserResponseDTO;
 import com.pingme.server.domain.entity.MessageEntity;
 import com.pingme.server.domain.entity.UserEntity;
 import com.pingme.server.mappers.Impl.MessageMapperImpl;
+import com.pingme.server.mappers.Impl.MessageRestrictedMapper;
 import com.pingme.server.mappers.Impl.UserMapperImpl;
 import com.pingme.server.repository.MessageRepository;
 import com.pingme.server.service.MessageService;
@@ -34,11 +35,14 @@ public class MessageServiceImpl implements MessageService {
     private MessageMapperImpl messageMapper;
 
     @Autowired
+    private MessageRestrictedMapper messageRestrictedMapper;
+
+    @Autowired
     private UserMapperImpl userMapper;
 
     @Async
     @Override
-    public CompletableFuture<String> saveMessage(MessageIntermediateDTO payload) {
+    public CompletableFuture<MessageOnlyResponseDTO> saveMessage(MessageIntermediateDTO payload) {
 
         MessageEntity message = MessageEntity
                 .builder()
@@ -50,7 +54,7 @@ public class MessageServiceImpl implements MessageService {
 
         MessageEntity savedMessage = messageRepository.save(message);
 
-        return CompletableFuture.completedFuture(savedMessage.getId());
+        return CompletableFuture.completedFuture(messageRestrictedMapper.mapTo((savedMessage)));
 
     }
 
@@ -109,6 +113,7 @@ public class MessageServiceImpl implements MessageService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<MessageOnlyResponseDTO> messages =   messageRepository.getChatBetweenUsers(receiver, sender, pageable);
         return CompletableFuture.completedFuture(messages);
+
     }
 
 }

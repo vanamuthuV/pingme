@@ -5,7 +5,7 @@ import type { ChatDataContextType } from "../types/context-data-context";
 const useData = () : ChatDataContextType => {
   const context = useContext(ChatDataContext);
 
-  if (context) {
+  if (!context) {
     throw new Error("useData is not under ChatDataProvider survillance");
   }
 

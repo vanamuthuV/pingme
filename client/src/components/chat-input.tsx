@@ -56,7 +56,6 @@
 //   );
 // }
 
-
 import * as React from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -82,6 +81,7 @@ export function ChatInput() {
         JSON.stringify({
           recieverId: selectedChat.selectedchat,
           message: ref.current.value,
+          time: new Date().toISOString(),
         })
       );
       ref.current.value = "";

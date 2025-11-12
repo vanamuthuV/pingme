@@ -4,11 +4,9 @@ import type React from "react";
 import { useEffect, useRef, useState, useCallback } from "react";
 import axios from "../api/axios";
 import { useSelectedChat } from "../hooks/use-selected-chat";
-import type { RawMessage } from "../types/message";
 import { useAuth } from "../hooks/use-auth";
 import { Loader2 } from "lucide-react";
 import { MessageEntity } from "./message-entity";
-import { useChat } from "../hooks/use-chat";
 import { useData } from "../hooks/use-data";
 
 async function fetchMessages({
@@ -111,11 +109,10 @@ const ChatWindow = () => {
       console.log("✅ Loaded messages:", content.length, "hasMore:", more);
 
       if (content.length > 0) {
-        setChatHistory((prev) => [...content.reverse(), ...prev]);
+        setChatHistory((prev) => [...content.reverse(), ...prev!]);
         currentPageRef.current += 1;
         setHasMore(more);
 
-        // Wait for DOM to update, then restore scroll position
         setTimeout(() => {
           if (containerRef.current) {
             const newScrollHeight = containerRef.current.scrollHeight;
@@ -207,7 +204,7 @@ const ChatWindow = () => {
       )}
 
       {/* End of messages indicator */}
-      {!hasMore && chatHistory.length > 0 && !isLoadingMore && (
+      {!hasMore && chatHistory!.length > 0 && !isLoadingMore && (
         <div className="flex justify-center py-4 bg-background/50">
           <div className="text-xs text-muted-foreground bg-secondary/30 px-3 py-1.5 rounded-full">
             Beginning of conversation
@@ -217,7 +214,7 @@ const ChatWindow = () => {
 
       {/* Messages container */}
       <div className="flex flex-col w-full min-h-0">
-        {chatHistory.map((message, i) => {
+        {chatHistory!.map((message, i) => {
           const isMine = session?.user.id === message.sender;
 
           return (
@@ -248,7 +245,7 @@ const ChatWindow = () => {
       </div>
 
       {/* Empty state */}
-      {chatHistory.length === 0 && (
+      {chatHistory!.length === 0 && (
         <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-4">
           <div className="w-16 h-16 rounded-full bg-secondary/50 flex items-center justify-center">
             <svg

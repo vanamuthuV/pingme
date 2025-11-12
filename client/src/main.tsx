@@ -14,15 +14,15 @@ createRoot(document.getElementById("root")!).render(
   // <StrictMode>
   <ThemeProvider defaultTheme="dark">
     <SessionProvider>
-      <ChatProvider>
-        <SelectedChatProvider>
-          <ChatDataProvider>
+      <ChatDataProvider>
+        <ChatProvider>
+          <SelectedChatProvider>
             <App />
             <Toaster />
             <HandleWebSocketConnection />
-          </ChatDataProvider>
-        </SelectedChatProvider>
-      </ChatProvider>
+          </SelectedChatProvider>
+        </ChatProvider>
+      </ChatDataProvider>
     </SessionProvider>
   </ThemeProvider>
 );

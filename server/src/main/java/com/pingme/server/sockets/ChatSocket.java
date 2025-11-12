@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.pingme.server.config.WSContextTranferFromHttp;
-import com.pingme.server.domain.dto.MessageIntermediateDTO;
-import com.pingme.server.domain.dto.MessageResponseDTO;
-import com.pingme.server.domain.dto.SenderMessageDTO;
-import com.pingme.server.domain.dto.UserResponseDTO;
+import com.pingme.server.domain.dto.*;
 import com.pingme.server.service.MessageService;
 import com.pingme.server.sockets.utils.SocketClientHandler;
 import com.pingme.server.types.RedisEnums;
@@ -22,6 +19,7 @@ import jakarta.websocket.server.ServerEndpoint;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -127,30 +125,37 @@ public class ChatSocket {
         SenderMessageDTO message = mapper.readValue(payload, SenderMessageDTO.class);
         UserResponseDTO senderDetails = (UserResponseDTO) session.getUserProperties().get("user");
 
-        CompletableFuture<String> messageId = getMessageService().saveMessage(
+        CompletableFuture<MessageOnlyResponseDTO> savedMessage = getMessageService().saveMessage(
                 MessageIntermediateDTO
                         .builder()
                         .senderId(senderDetails.getId())
                         .recieverId(message.getRecieverId())
                         .message(message.getMessage())
-                        .time(message.getTime())
+                        .time(Instant.parse(message.getTime()))
                         .build()
         );
 
+        Map<String, String> map = new HashMap<>();
+        map.put("sender", senderDetails.getId());
+        map.put("receiver", message.getRecieverId());
+        map.put("message", savedMessage.get().getMessage());
+        map.put("id", savedMessage.get().getId());
+        map.put("createdAt", savedMessage.get().getCreatedAt().toString());
+        map.put("updatedAt", savedMessage.get().getUpdatedAt().toString());
+        map.put("seen", String.valueOf(savedMessage.get().isSeen()));
+        map.put("delivered", String.valueOf(savedMessage.get().isDelivered()));
+        map.put("edited", String.valueOf(savedMessage.get().isEdited()));
+
         if(clients.isClientConnected(SocketType.CHAT, message.getRecieverId())) {
             Session recieverSession = clients.getSession(SocketType.CHAT, message.getRecieverId());
-            Map<String, String> map = new HashMap<>();
-            map.put("from", senderDetails.getId());
-            map.put("to", message.getRecieverId());
-            map.put("message", message.getMessage());
-            map.put("time", message.getTime().toString());
-
             recieverSession.getBasicRemote().sendText(mapper.writeValueAsString(map));
-
+            map.put("delivered", "true");
             session.getBasicRemote().sendText("sent message to : " + message.getRecieverId());
         } else {
-            getRedisUtils().addMessageValue(RedisEnums.MESSAGE.name() + message.getRecieverId(), messageId.get());
+            getRedisUtils().addMessageValue(RedisEnums.MESSAGE.name() + message.getRecieverId(), savedMessage.get().getId());
         }
+
+        session.getBasicRemote().sendText(mapper.writeValueAsString(map));
 
     }
 

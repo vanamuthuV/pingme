@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface MessageService {
 
-    public CompletableFuture<String> saveMessage(MessageIntermediateDTO payload);
+    public CompletableFuture<MessageOnlyResponseDTO> saveMessage(MessageIntermediateDTO payload);
     public CompletableFuture<MessageResponseDTO[]> getUnseenMessageByRecieverId(String id);
     public CompletableFuture<MessageResponseDTO[]> getAllMessages(List<String> messageIds);
     public CompletableFuture<List<UserResponseDTO>> getDistinctSendersByReceiverId(String id);

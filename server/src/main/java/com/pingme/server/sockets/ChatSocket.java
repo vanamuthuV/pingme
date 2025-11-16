@@ -135,6 +135,10 @@ public class ChatSocket {
                         .build()
         );
 
+        Map<String, Object> messagePayload = new HashMap<>();
+
+        messagePayload.put("type", "message");
+
         Map<String, String> map = new HashMap<>();
         map.put("sender", senderDetails.getId());
         map.put("receiver", message.getRecieverId());
@@ -146,16 +150,18 @@ public class ChatSocket {
         map.put("delivered", String.valueOf(savedMessage.get().isDelivered()));
         map.put("edited", String.valueOf(savedMessage.get().isEdited()));
 
+        messagePayload.put("payload", map);
+
         if(clients.isClientConnected(SocketType.CHAT, message.getRecieverId())) {
             Session recieverSession = clients.getSession(SocketType.CHAT, message.getRecieverId());
-            recieverSession.getBasicRemote().sendText(mapper.writeValueAsString(map));
+            recieverSession.getBasicRemote().sendText(mapper.writeValueAsString(messagePayload));
             map.put("delivered", "true");
-            session.getBasicRemote().sendText("sent message to : " + message.getRecieverId());
+            messagePayload.put("payload", map);
         } else {
             getRedisUtils().addMessageValue(RedisEnums.MESSAGE.name() + message.getRecieverId(), savedMessage.get().getId());
         }
 
-        session.getBasicRemote().sendText(mapper.writeValueAsString(map));
+        session.getBasicRemote().sendText(mapper.writeValueAsString(messagePayload));
 
     }
 

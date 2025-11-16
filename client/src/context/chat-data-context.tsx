@@ -5,7 +5,7 @@ import type { ChatDataContextType } from "../types/context-data-context";
 const ChatDataContext = createContext<ChatDataContextType | null>(null);
 
 const ChatDataProvider = ({ children }: { children: React.ReactNode }) => {
-  const [chatHistory, setChatHistory] = useState<RawMessage[]>();
+  const [chatHistory, setChatHistory] = useState<RawMessage[] | undefined>([]);
 
   return (
     <ChatDataContext.Provider value={{ chatHistory, setChatHistory }}>

@@ -6,7 +6,9 @@ import com.pingme.server.domain.entity.MessageEntity;
 import com.pingme.server.mappers.Mapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class MessageRestrictedMapper implements Mapper<MessageOnlyResponseDTO, MessageEntity> {
 
     @Autowired

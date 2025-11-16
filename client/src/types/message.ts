@@ -1,6 +1,7 @@
 import type { User } from "./user";
 
 type Message = {
+  uuid?: string;
   id: string;
   message: string;
   createdAt: string;
@@ -13,6 +14,7 @@ type Message = {
 };
 
 type RawMessage = {
+  uuid?: string;
   id: string;
   message: string;
   createdAt: string;

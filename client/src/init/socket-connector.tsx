@@ -11,7 +11,7 @@ const HandleWebSocketConnection = () => {
 
   ws.socket.onclose = () => console.log("client disconnected");
 
-  ws.socket.onerror = (err) => console.log("erro " + err);
+  ws.socket.onerror = (err) => console.log("erro " + err.target + err.stopPropagation);
 
   return null;
 };

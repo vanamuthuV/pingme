@@ -1,9 +1,12 @@
 import { useChat } from "../hooks/use-chat";
+import { useData } from "../hooks/use-data";
 import { useSelectedChat } from "../hooks/use-selected-chat";
+import type { Message, RawMessage } from "../types/message";
 import type { SocketPayload } from "../types/socket-payload";
 
 export function useSocketHandler() {
   const { setChat } = useChat();
+  const { setChatHistory } = useData();
   const { selectedChat, setSelectedChat } = useSelectedChat();
 
   const payloadParser = (payload: string): SocketPayload => {
@@ -12,6 +15,8 @@ export function useSocketHandler() {
 
   const processSocketMessage = (payload: string) => {
     const parsedPayload: SocketPayload = payloadParser(payload);
+
+    console.log(parsedPayload.type);
 
     switch (parsedPayload.type) {
       case "status": {
@@ -53,7 +58,12 @@ export function useSocketHandler() {
         break;
       }
       case "message": {
-        // later handle message payloads
+        console.log(parsedPayload.payload);
+
+        setChatHistory((prev: any) => {
+          return [...prev, parsedPayload.payload];
+        });
+
         break;
       }
       default: {

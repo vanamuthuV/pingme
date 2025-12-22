@@ -41,6 +41,7 @@ import { useAuth } from "../hooks/use-auth";
 import { useChat } from "../hooks/use-chat";
 import type { Chat } from "../types/chat";
 import { useSelectedChat } from "../hooks/use-selected-chat";
+import { CreateChat } from "./create-chat";
 
 type AppSidebarProps = {
   className?: string;
@@ -67,7 +68,7 @@ export function AppSidebar({
         if (response?.data?.status) {
           let chats: Chat[] = [];
           response?.data?.data?.users.map((user: UserType) =>
-            chats.push({ user, lastmessage: ""})
+            chats.push({ user, lastmessage: "" })
           );
           setChat(chats);
         }
@@ -144,10 +145,11 @@ export function AppSidebar({
             />
             <span className="font-medium text-sm text-foreground">Chats</span>
           </div>
-          <Button className="h-6 rounded-sm border-0">
+          {/* <Button className="h-6 rounded-sm border-0">
             <Plus className="size-3" aria-hidden />
             <span className="text-[10px]">New</span>
-          </Button>
+          </Button> */}
+          <CreateChat />
         </div>
       </SidebarHeader>
 

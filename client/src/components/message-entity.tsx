@@ -108,13 +108,6 @@ const MessageEntity = ({
                         side="top"
                       >
                         <DropdownMenuItem
-                          //   onClick={handleReply}
-                          className="cursor-pointer text-xs sm:text-sm"
-                        >
-                          <Reply className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                          Reply
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
                           //   onClick={handleCopy}
                           className="cursor-pointer text-xs sm:text-sm"
                         >
@@ -122,13 +115,7 @@ const MessageEntity = ({
                           Copy
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          //   onClick={handleEdit}
-                          className="cursor-pointer text-xs sm:text-sm"
-                        >
-                          <Pencil className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                          Edit
-                        </DropdownMenuItem>
+                      
                         <DropdownMenuItem
                           //   onClick={handleDelete}
                           className="cursor-pointer text-destructive focus:text-destructive text-xs sm:text-sm"

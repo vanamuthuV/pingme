@@ -69,7 +69,7 @@ public class ChatSocket {
         String redisMessages = getRedisUtils().getValue(RedisEnums.MESSAGE.name() + user.getId().trim());
         List<String> list = new ArrayList<>();
 
-        System.out.println(redisMessages);
+        System.out.println("Redis MEssage" + redisMessages);
 
         if(redisMessages != null && !redisMessages.trim().isEmpty())
             list = getObjectMapper().readValue(redisMessages, new TypeReference<List<String>>(){});

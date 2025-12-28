@@ -1,19 +1,33 @@
+import { useEffect, useRef } from "react";
 import { WebSocketConfig } from "../config/websocket-config";
 import { useSocketHandler } from "../utils/socket-handler";
 
 const HandleWebSocketConnection = () => {
-  const ws = new WebSocketConfig();
+  const wsRef = useRef<WebSocketConfig | null>(null);
   const { processSocketMessage } = useSocketHandler();
 
-  ws.socket.onopen = () => console.log("client connected");
+  useEffect(() => {
+    if (wsRef.current) return;
 
-  ws.socket.onmessage = (event) => processSocketMessage(event.data);
+    wsRef.current = WebSocketConfig.getInstance();
 
-  ws.socket.onclose = () => console.log("client disconnected");
+    const socket = wsRef.current.socket;
 
-  ws.socket.onerror = (err) => console.log("erro " + err.target + err.stopPropagation);
+    socket.onopen = () => console.log("client connected");
 
-  return null;
+    socket.onmessage = (event) => processSocketMessage(event.data);
+
+    socket.onclose = (e) =>
+      console.log("client disconnected", e.code, e.reason);
+
+    socket.onerror = () => console.error("WebSocket error");
+
+    return () => {
+      // socket.close();
+      // wsRef.current = null;
+    };
+  }, []);
+
 };
 
 export { HandleWebSocketConnection };

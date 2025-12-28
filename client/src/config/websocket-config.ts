@@ -1,22 +1,23 @@
-const WebscoketURI = import.meta.env.VITE_WEBSOCKET_URI;
-
 class WebSocketConfig {
-  // Private Variable
-  #ws;
+  static instance: WebSocketConfig;
+  socket: WebSocket;
 
-  constructor() {
-    this.#ws = new WebSocket(WebscoketURI);
+  private constructor() {
+    this.socket = new WebSocket(import.meta.env.VITE_WEBSOCKET_URI);
   }
 
-  get socket() {
-    return this.#ws;
+  static getInstance() {
+    if (!this.instance) {
+      this.instance = new WebSocketConfig();
+    }
+    return this.instance;
   }
 
-  sendMessage(message: string) {
-    if (this.#ws.readyState === WebSocket.OPEN) {
-      this.#ws.send(message);
+  sendMessage(data: string) {
+    if (this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(data);
     } else {
-      console.warn("WebSocket is not open yet, message not sent:", message);
+      console.warn("WS not ready, chill mf");
     }
   }
 }

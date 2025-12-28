@@ -28,6 +28,8 @@ public class WSContextTranferFromHttp extends ServerEndpointConfig.Configurator 
             UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) principal;
             UserResponseDTO user = (UserResponseDTO) auth.getPrincipal();
 
+            System.out.println("The principal " + user);
+
             if(user != null)
                 sec.getUserProperties().put("user", user);
             else

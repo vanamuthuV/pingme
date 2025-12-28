@@ -7,11 +7,8 @@ import { useAuth } from "./hooks/use-auth";
 import { useEffect, useState } from "react";
 import axios from "./api/axios";
 import { Loader } from "lucide-react";
-import { HandleWebSocketConnection } from "./init/socket-connector";
 
 function App() {
-  // Initiating Websocket connection
-  HandleWebSocketConnection();
 
   const { login } = useAuth();
   const [component, setComponent] = useState<"landing" | "chat">("landing");

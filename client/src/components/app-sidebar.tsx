@@ -264,22 +264,7 @@ export function AppSidebar({
                 </p>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={onProfileClick}
-              className="cursor-pointer gap-2"
-            >
-              <User className="h-4 w-4" />
-              <span>Profile</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={onSettingsClick}
-              className="cursor-pointer gap-2"
-            >
-              <Settings className="h-4 w-4" />
-              <span>Settings</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
+           
             <DropdownMenuItem
               onClick={() => setTheme("light")}
               className="cursor-pointer gap-2"

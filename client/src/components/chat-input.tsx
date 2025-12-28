@@ -12,7 +12,6 @@ import { useAuth } from "../hooks/use-auth";
 export function ChatInput() {
   const ref = React.useRef<HTMLInputElement>(null);
   const { selectedChat } = useSelectedChat();
-  const ws = new WebSocketConfig();
 
   const uuid = new Uuid();
 
@@ -43,16 +42,16 @@ export function ChatInput() {
         edited: false,
       };
 
-      setChatHistory((prev: any) => {
-        return [...prev, tempMessage];
-      });
+      // setChatHistory((prev: any) => {
+      //   return [...prev, tempMessage];
+      // });
 
-      ws.sendMessage(
+      WebSocketConfig.getInstance().sendMessage(
         JSON.stringify({
           uuid: id,
           recieverId: selectedChat.selectedchat,
           message: ref.current.value,
-          time: time,
+          time,
         })
       );
       ref.current.value = "";

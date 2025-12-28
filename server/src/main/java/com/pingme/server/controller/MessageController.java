@@ -21,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -52,20 +53,16 @@ public class MessageController {
     @GetMapping("/get-senders")
     public ResponseEntity<ResponderType> getDistinctSendersByReceiverId() throws ExecutionException, InterruptedException, JsonProcessingException {
 
-        // get current user data
         UserResponseDTO user = (UserResponseDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // check if the user is null
         if(user == null) {
             System.out.println("cannot find data in principal " + this.getClass());
             throw new ContextPrincipalEmptyException("can not get user session");
         }
 
-        // get the chat persons
         CompletableFuture<List<UserResponseDTO>> senderPromise = messageService.getDistinctSendersByReceiverId(user.getId());
         List<UserResponseDTO> senders = senderPromise.get();
 
-        // store the user_id of the sender for the websocket based status updates
         if(statusSubscribers.getSubscribers(RedisEnums.CHAT_SUBS.name() + user.getId().trim()).isEmpty())
             for(UserResponseDTO usr : senders)
                 statusSubscribers.addSubscriber(RedisEnums.CHAT_SUBS.name() + user.getId().trim(), usr.getId().trim());
@@ -110,6 +107,11 @@ public class MessageController {
         Page<MessageOnlyResponseDTO> messages = messageService.getMessagesBetweenUser(page, size, currentUser.getId(), sender).get();
 
         return ResponseEntity.ok(messages);
+    }
+
+    @DeleteMapping("/message/{id}")
+    public ResponseEntity<HashMap<String, Object>> deleteMessage(@PathVariable String id) {
+        
     }
 
 }

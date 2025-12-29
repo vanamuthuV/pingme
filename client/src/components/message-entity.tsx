@@ -16,6 +16,31 @@ import {
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
 import { useState } from "react";
+import axios from "../api/axios";
+import { toast } from "sonner";
+
+export const copyToClipboard = async (text: string) => {
+  try {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      return true;
+    }
+
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textarea);
+
+    return true;
+  } catch (err) {
+    console.error("Copy failed:", err);
+    return false;
+  }
+};
 
 const MessageEntity = ({
   id,
@@ -38,8 +63,19 @@ const MessageEntity = ({
   isMine: boolean;
   profile: string;
 }): React.ReactNode => {
+
   const [hover, setHover] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [deleted, setDeleted] = useState(edited);
+  console.log("Edited " + edited + " " + id + " " + deleted);
+
+  const deleteMessage = async () => {
+    const { data } = await axios.delete(`/message/${id}`);
+
+    if (data.status) setDeleted(true);
+
+    toast(data?.message);
+  };
 
   return (
     <div
@@ -70,28 +106,31 @@ const MessageEntity = ({
               isMine
                 ? "bg-primary text-primary-foreground text-right rounded-tr-sm rounded hover:bg-primary/90"
                 : "bg-secondary text-secondary-foreground rounded text-left hover:bg-secondary/80 border border-border"
-            }`}
+            }
+              ${
+                deleted &&
+                "bg-muted/40 text-muted-foreground italic opacity-80 line-through cursor-not-allowed decoration-muted-foreground/40 border-l-4 border-muted pl-3"
+              }    
+            `}
           >
             <div
               onMouseEnter={() => setHover(true)}
               onMouseLeave={() => {
-                // Only hide if dropdown is not open
                 if (!dropdownOpen) {
                   setHover(false);
                 }
               }}
               className="relative w-auto z-10 break-words text-xs sm:text-sm leading-relaxed flex items-center gap-2 justify-center"
             >
-              <span>{message}</span>
+              <span>{deleted ? "message deleted" : message}</span>
 
-              {isMine &&
+              {!deleted &&
                 (hover || dropdownOpen ? (
                   <div className="flex flex-1 w-full justify-end">
                     <DropdownMenu
                       open={dropdownOpen}
                       onOpenChange={(open) => {
                         setDropdownOpen(open);
-                        // When dropdown closes, also hide the hover state
                         if (!open) {
                           setHover(false);
                         }
@@ -108,44 +147,40 @@ const MessageEntity = ({
                         side="top"
                       >
                         <DropdownMenuItem
-                          //   onClick={handleCopy}
+                          onClick={async () => {
+                            const success = await copyToClipboard(message);
+                            if (success) toast("Copied to clipboard");
+                            else toast("Copy failed");
+                          }}
                           className="cursor-pointer text-xs sm:text-sm"
                         >
                           <Copy className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                           Copy
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                      
-                        <DropdownMenuItem
-                          //   onClick={handleDelete}
-                          className="cursor-pointer text-destructive focus:text-destructive text-xs sm:text-sm"
-                        >
-                          <Trash2 className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                          Delete
-                        </DropdownMenuItem>
+                        {isMine && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={deleteMessage}
+                              className="cursor-pointer text-destructive focus:text-destructive text-xs sm:text-sm"
+                            >
+                              <Trash2 className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
                 ) : (
-                  <span className="flex items-center flex-shrink-0">
-                    {seen ? (
-                      <CheckCheck className="h-3 w-3 text-blue-500" />
-                    ) : delivered ? (
-                      <CheckCheck className="h-3 w-3" />
-                    ) : (
-                      <Check className="h-3 w-3" />
-                    )}
-                  </span>
+                  <span className="flex items-center w-3 flex-shrink-0"></span>
                 ))}
             </div>
           </div>
 
           <div
-            className={`flex items-center gap-1 sm:gap-2 text-[10px] sm:text-[6px] text-muted-foreground mt-1 px-1 ${
-              isMine ? "flex-row-reverse" : "flex-row"
-            }`}
+            className={`flex items-center gap-1 sm:gap-2 text-[10px] sm:text-[6px] text-muted-foreground mt-1 px-1 flex-row`}
           >
-            {/* Timestamp */}
             <span className="font-medium whitespace-nowrap">
               <span className="hidden sm:inline">
                 {new Date(createdAt).toLocaleDateString([], {
@@ -159,10 +194,9 @@ const MessageEntity = ({
                 minute: "2-digit",
               })}
             </span>
-
-            {edited && (
+            {isMine && !delivered && (
               <span className="text-muted-foreground/70 italic whitespace-nowrap">
-                (edited)
+                sending...
               </span>
             )}
           </div>

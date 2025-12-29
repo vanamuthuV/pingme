@@ -23,6 +23,7 @@ import axios from "../api/axios";
 import { useSelectedChat } from "../hooks/use-selected-chat";
 import { Alert, AlertDescription } from "./ui/alert";
 import type { User } from "../types/user";
+import { useChat } from "../hooks/use-chat";
 
 const capitalize = (str: string) => str?.charAt(0).toUpperCase() + str.slice(1);
 
@@ -35,6 +36,7 @@ export function CreateChat() {
   const [foundUser, setFoundUser] = useState<User | null>(null);
   const [open, setOpen] = useState(false);
   const { setSelectedChat } = useSelectedChat();
+  const { setChat } = useChat();
 
   const handleSearchUser = async () => {
     const trimmedEmail = email.trim();
@@ -89,6 +91,15 @@ export function CreateChat() {
           },
         };
       });
+
+      setChat((prev) => [
+        ...prev,
+        {
+          user: foundUser,
+          lastmessage: "",
+        },
+      ]);
+
       // Close dialog and reset state
       setOpen(false);
       resetDialog();

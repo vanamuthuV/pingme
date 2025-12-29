@@ -149,6 +149,7 @@ public class ChatSocket {
         map.put("seen", String.valueOf(savedMessage.get().isSeen()));
         map.put("delivered", String.valueOf(savedMessage.get().isDelivered()));
         map.put("edited", String.valueOf(savedMessage.get().isEdited()));
+        map.put("uuid", message.getUuid());
 
         messagePayload.put("payload", map);
 

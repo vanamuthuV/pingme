@@ -6,6 +6,7 @@ import com.pingme.server.domain.dto.MessageResponseDTO;
 import com.pingme.server.domain.dto.UserResponseDTO;
 import com.pingme.server.domain.entity.MessageEntity;
 import com.pingme.server.domain.entity.UserEntity;
+import com.pingme.server.exceptions.DataNotFoundException;
 import com.pingme.server.mappers.Impl.MessageMapperImpl;
 import com.pingme.server.mappers.Impl.MessageRestrictedMapper;
 import com.pingme.server.mappers.Impl.UserMapperImpl;
@@ -114,6 +115,26 @@ public class MessageServiceImpl implements MessageService {
         Page<MessageOnlyResponseDTO> messages =   messageRepository.getChatBetweenUsers(receiver, sender, pageable);
         return CompletableFuture.completedFuture(messages);
 
+    }
+
+    @Override
+    public CompletableFuture<Boolean> deleteMessage(String id) {
+
+        MessageEntity message = messageRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("cannot find message with message-id " + id));
+
+        message.setMessage("");
+        message.setDelivered(false);
+        message.setSeen(false);
+        message.setIsEdited(true);
+
+        try {
+            MessageEntity updatesMessage = messageRepository.save(message);
+            return CompletableFuture.completedFuture(true);
+        } catch (Exception e) {
+            System.out.println("From: " + this.getClass() + e.getMessage());
+            return CompletableFuture.completedFuture(false);
+        }
     }
 
 }

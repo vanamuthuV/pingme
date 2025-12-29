@@ -38,13 +38,13 @@ export function ChatInput() {
         createdAt: time,
         updatedAt: time,
         seen: false,
-        delivered: true,
+        delivered: false,
         edited: false,
       };
 
-      // setChatHistory((prev: any) => {
-      //   return [...prev, tempMessage];
-      // });
+      setChatHistory((prev: any) => {
+        return [...prev, tempMessage];
+      });
 
       WebSocketConfig.getInstance().sendMessage(
         JSON.stringify({

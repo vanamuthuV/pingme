@@ -24,5 +24,6 @@ public interface MessageService {
             String receiver,
             String sender
     );
+    public CompletableFuture<Boolean> deleteMessage(String id);
 
  }

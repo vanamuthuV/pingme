@@ -6,6 +6,7 @@ import com.pingme.server.domain.dto.MessageResponseDTO;
 import com.pingme.server.domain.dto.UserResponseDTO;
 import com.pingme.server.domain.entity.MessageEntity;
 import com.pingme.server.exceptions.ContextPrincipalEmptyException;
+import com.pingme.server.exceptions.DataNotFoundException;
 import com.pingme.server.mappers.Impl.MessageMapperImpl;
 import com.pingme.server.service.Impl.MessageServiceImpl;
 import com.pingme.server.service.MessageService;
@@ -110,8 +111,14 @@ public class MessageController {
     }
 
     @DeleteMapping("/message/{id}")
-    public ResponseEntity<HashMap<String, Object>> deleteMessage(@PathVariable String id) {
-        
+    public ResponseEntity<ResponderType> deleteMessage(@PathVariable String id) throws ExecutionException, InterruptedException {
+
+        if(id.isEmpty())
+            throw new DataNotFoundException("message id is empty");
+
+        Boolean isDeleted = messageService.deleteMessage(id).get();
+
+        return ResponseEntity.ok(responder.createResponse(isDeleted, isDeleted ? "deletion success" : "deletion failed", null));
     }
 
 }

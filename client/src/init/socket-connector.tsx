@@ -28,6 +28,8 @@ const HandleWebSocketConnection = () => {
     };
   }, []);
 
+  return null;
+
 };
 
 export { HandleWebSocketConnection };

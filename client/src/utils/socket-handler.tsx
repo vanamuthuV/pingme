@@ -58,14 +58,42 @@ export function useSocketHandler() {
         break;
       }
       case "message": {
-        console.log(parsedPayload.payload);
+        const incoming = parsedPayload.payload;
+
+        console.log(incoming);
 
         setChatHistory((prev: any) => {
-          return [...prev, parsedPayload.payload];
+          // uuid missing → just append
+          if (!incoming.uuid) {
+            console.log("got uuid");
+            return [...prev, incoming];
+          }
+
+          const index = prev.findIndex(
+            (msg: any) => msg.uuid === incoming.uuid
+          );
+
+          if (index !== -1) {
+            console.log("gotacha bro");
+            return prev.map((msg: any, i: any) =>
+              i === index
+                ? {
+                    ...msg,
+                    id: incoming.id ?? msg.id,
+                    delivered: incoming.delivered ?? msg.delivered,
+                  }
+                : msg
+            );
+          } else {
+            incoming.edited = false;  
+          }
+
+          return [...prev, incoming];
         });
 
         break;
       }
+
       default: {
         console.log("different case field encountered");
       }

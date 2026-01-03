@@ -98,7 +98,7 @@ const ChatWindow = () => {
     const prevScrollTop = container.scrollTop;
 
     try {
-      console.log("🔄 Loading page:", currentPageRef.current);
+      // console.log("🔄 Loading page:", currentPageRef.current);
 
       const { content, hasMore: more } = await fetchMessages({
         sender_id: selectedChat.selectedchat,
@@ -106,7 +106,7 @@ const ChatWindow = () => {
         size: batchSize,
       });
 
-      console.log("✅ Loaded messages:", content.length, "hasMore:", more);
+      // console.log("✅ Loaded messages:", content.length, "hasMore:", more);
 
       if (content.length > 0) {
         setChatHistory((prev) => [...content.reverse(), ...prev!]);
@@ -122,12 +122,12 @@ const ChatWindow = () => {
             containerRef.current.scrollTop = prevScrollTop + scrollDiff;
             lastScrollTopRef.current = containerRef.current.scrollTop;
 
-            console.log("📍 Scroll restored:", {
-              prevHeight: prevScrollHeight,
-              newHeight: newScrollHeight,
-              diff: scrollDiff,
-              newScrollTop: containerRef.current.scrollTop,
-            });
+            // console.log("📍 Scroll restored:", {
+            //   prevHeight: prevScrollHeight,
+            //   newHeight: newScrollHeight,
+            //   diff: scrollDiff,
+            //   newScrollTop: containerRef.current.scrollTop,
+            // });
           }
         }, 50);
       } else {
@@ -151,14 +151,14 @@ const ChatWindow = () => {
 
       // Only log on significant scroll changes
       if (Math.abs(currentScrollTop - lastScrollTopRef.current) > 50) {
-        console.log("📜 Scroll:", {
-          scrollTop: Math.round(currentScrollTop),
-          scrollHeight: container.scrollHeight,
-          clientHeight: container.clientHeight,
-          distanceFromTop: Math.round(currentScrollTop),
-          canLoadMore: hasMore,
-          isLoading: isFetchingRef.current,
-        });
+        // console.log("📜 Scroll:", {
+        //   scrollTop: Math.round(currentScrollTop),
+        //   scrollHeight: container.scrollHeight,
+        //   clientHeight: container.clientHeight,
+        //   distanceFromTop: Math.round(currentScrollTop),
+        //   canLoadMore: hasMore,
+        //   isLoading: isFetchingRef.current,
+        // });
         lastScrollTopRef.current = currentScrollTop;
       }
 
@@ -169,7 +169,7 @@ const ChatWindow = () => {
         !isFetchingRef.current &&
         !initialLoad
       ) {
-        console.log("🎯 Triggering load more!");
+        // console.log("🎯 Triggering load more!");
         loadMoreMessages();
       }
     },

@@ -1,4 +1,4 @@
-import type { Chat, NullableChat } from "./chat";
+import type { NullableChat } from "./chat";
 
 type SelectedChatType = {
   selectedchat: string;

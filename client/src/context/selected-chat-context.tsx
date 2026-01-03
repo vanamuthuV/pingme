@@ -1,7 +1,7 @@
 import React, { createContext, useState } from "react";
 import { type SelectedChatType } from "../types/selected-chat";
 import { type SelectedChatContextType } from "../types/selected-chat-context";
-import type { Chat, NullableChat } from "../types/chat";
+import type { NullableChat } from "../types/chat";
 
 const SelectedChatContext = createContext<SelectedChatContextType | null>(null);
 

@@ -17,7 +17,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
@@ -25,13 +24,10 @@ import { useTheme } from "../context/theme-context";
 import {
   MessagesSquare,
   ChevronUp,
-  Settings,
   Sun,
   Moon,
   Monitor,
   Loader,
-  User,
-  Plus,
 } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
 import { useEffect, useState } from "react";
@@ -50,9 +46,7 @@ type AppSidebarProps = {
 };
 
 export function AppSidebar({
-  className,
-  onSettingsClick,
-  onProfileClick,
+  className
 }: AppSidebarProps) {
   const { setTheme } = useTheme();
   const { session } = useAuth();
@@ -96,7 +90,7 @@ export function AppSidebar({
             }
           });
 
-        console.log(sendersLastMessages);
+        // console.log(sendersLastMessages);
 
         if (messagesResponse?.data?.status) {
           setChat((prev) =>

@@ -13,12 +13,11 @@ const HandleWebSocketConnection = () => {
 
     const socket = wsRef.current.socket;
 
-    socket.onopen = () => console.log("client connected");
+    socket.onopen = () => { };
 
     socket.onmessage = (event) => processSocketMessage(event.data);
 
-    socket.onclose = (e) =>
-      console.log("client disconnected", e.code, e.reason);
+    socket.onclose = () => {}
 
     socket.onerror = () => console.error("WebSocket error");
 

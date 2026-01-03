@@ -1,10 +1,6 @@
 import {
-  Check,
-  CheckCheck,
   Copy,
   MoreHorizontal,
-  Pencil,
-  Reply,
   Trash2,
 } from "lucide-react";
 import type React from "react";
@@ -46,9 +42,9 @@ const MessageEntity = ({
   id,
   message,
   createdAt,
-  updatedAt,
+  // updatedAt,
   delivered,
-  seen,
+  // seen,
   edited,
   isMine,
   profile,
@@ -67,7 +63,7 @@ const MessageEntity = ({
   const [hover, setHover] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [deleted, setDeleted] = useState(edited);
-  console.log("Edited " + edited + " " + id + " " + deleted);
+  // console.log("Edited " + edited + " " + id + " " + deleted);
 
   const deleteMessage = async () => {
     const { data } = await axios.delete(`/message/${id}`);

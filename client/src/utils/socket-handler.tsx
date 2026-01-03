@@ -1,7 +1,6 @@
 import { useChat } from "../hooks/use-chat";
 import { useData } from "../hooks/use-data";
 import { useSelectedChat } from "../hooks/use-selected-chat";
-import type { Message, RawMessage } from "../types/message";
 import type { SocketPayload } from "../types/socket-payload";
 
 export function useSocketHandler() {
@@ -16,7 +15,7 @@ export function useSocketHandler() {
   const processSocketMessage = (payload: string) => {
     const parsedPayload: SocketPayload = payloadParser(payload);
 
-    console.log(parsedPayload.type);
+    // console.log(parsedPayload.type);
 
     switch (parsedPayload.type) {
       case "status": {
@@ -60,12 +59,12 @@ export function useSocketHandler() {
       case "message": {
         const incoming = parsedPayload.payload;
 
-        console.log(incoming);
+        // console.log(incoming);
 
         setChatHistory((prev: any) => {
           // uuid missing → just append
           if (!incoming.uuid) {
-            console.log("got uuid");
+            // console.log("got uuid");
             return [...prev, incoming];
           }
 
@@ -74,7 +73,7 @@ export function useSocketHandler() {
           );
 
           if (index !== -1) {
-            console.log("gotacha bro");
+            // console.log("gotacha bro");
             return prev.map((msg: any, i: any) =>
               i === index
                 ? {
@@ -95,7 +94,7 @@ export function useSocketHandler() {
       }
 
       default: {
-        console.log("different case field encountered");
+        // console.log("different case field encountered");
       }
     }
   };

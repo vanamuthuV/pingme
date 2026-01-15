@@ -32,15 +32,22 @@ public class AuthController {
     ) throws IOException {
         ResponderType result = oauthService.authenticate(code);
 
-        // Setting up the response header for the client application
-        Cookie cookie = new Cookie("token", result.getToken());
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 60 * 24);
+//        // Setting up the response header for the client application
+//        Cookie cookie = new Cookie("token", result.getToken());
+//        cookie.setHttpOnly(true);
+//        cookie.setSecure(false);
+//        cookie.setPath("/");
+//        cookie.setMaxAge(60 * 60 * 24);
+//
+//        response.addCookie(cookie);
 
-        response.addCookie(cookie);
-        response.sendRedirect("http://localhost:5173/");
+        response.addHeader(
+                "Set-Cookie",
+                "token=" + result.getToken()
+                        + "; Path=/; HttpOnly; SameSite=None; Secure"
+        );
+
+        response.sendRedirect("https://pingmi.vercel.app/");
 
     }
 

@@ -29,7 +29,7 @@ public class SecurityConfig {
                     cors.configurationSource(request -> {
                         CorsConfiguration config = new CorsConfiguration();
                         config.setAllowCredentials(true);
-                        config.setAllowedOrigins(List.of("http://localhost:5173")); // where requests come from
+                        config.setAllowedOrigins(List.of("http://localhost:5173", "https://pingmi.vercel.app")); // where requests come from
                         config.setAllowedMethods(List.of("POST", "GET", "DELETE", "PUT", "PATCH", "OPTIONS"));
                         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 

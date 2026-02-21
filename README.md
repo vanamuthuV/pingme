@@ -76,7 +76,3 @@ cd client
 npm install
 npm start
 ```
-
-Are you actually using Redis for caching WebSocket sessions or just configured it and not actively using it?
-
-Because if you are using it for pub/sub or scaling WebSockets, we can upgrade the README to sound way more serious.
